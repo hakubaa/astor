@@ -3,5 +3,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^account/', include("astoraccount.urls")),
+    url(r'^tests/', include("astor4tests.urls")),
     url(r'^', include("astormain.urls"))
 ]

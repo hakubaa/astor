@@ -3,5 +3,10 @@
         <title>ASTOR</title>
     </head>
     <body>
+        {% if user.is_authenticated %}
+            <a href="{% url 'astoraccount:index' %}">My Astor</a>
+        {% else %}
+            <a href="/login">My Astor</a>
+        {% endif %}
     </body>
 </html>

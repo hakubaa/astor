@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'astorcore',
     'astormain',
+    'astoraccount',
+    'astor4tests',
     'treebeard',
     
     'django.contrib.admin',
@@ -122,3 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Set user model
+AUTH_USER_MODEL = "astoraccount.User"

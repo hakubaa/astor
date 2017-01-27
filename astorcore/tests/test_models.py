@@ -24,13 +24,3 @@ class PageModelTest(TestCase):
 
     def test_publish_sets_published_date(self):
         pass
-
-        
-
-
-
-class UserModelTest(TestCase):
-
-    def create_user(self):
-        pass
-
