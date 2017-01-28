@@ -40,7 +40,7 @@ class NewPageTest(FunctionalTest):
 
         # Spider chooses 'Content Page' and he is redirected to 'Editor' where 
         # he has to input content of his new page. 
-        content_page_btn.click()
+        content_page.click()
 
         # He spots input box where he enters the title: "Test Artice"
         inputbox_title = self.browser.find_element_by_id("id-new-title")

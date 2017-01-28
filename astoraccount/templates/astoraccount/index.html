@@ -1,11 +1,11 @@
-<html !doctype>
-    <head>
-        <title>
-            ASTOR - Account
-        </title>
-    </head>
+{% extends "astoraccount/base.html" %}
 
-    <body>
-        <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
-    </body>
-</html>
+{% block title %}
+{{ super }}
+- Account
+{% endblock %}
+
+{% block content %}
+{{ super }}
+    <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
+{% endblock %}

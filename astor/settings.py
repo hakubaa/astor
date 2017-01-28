@@ -125,6 +125,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Define additional dirs with static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 
 # Set user model
 AUTH_USER_MODEL = "astoraccount.User"

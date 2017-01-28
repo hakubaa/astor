@@ -1,13 +1,18 @@
-<html !doctype>
-    <head>
-    </head>
+{% extends "astoraccount/base.html" %}
 
-    <body>
-        <p>Choose which type of page you'd like to create.</p>
-        {% for page in pages %}
-            <a href="{% url 'astoraccount:page_create' %}?type={{page.type}}">
-                {{ page.title }}
-            </a><br/>
-        {% endfor %}
-    </body>
-</html>
+{% block title %}
+{{ super }}
+- Account - New Page
+{% endblock %}
+
+{% block content %}
+{{ super }}
+
+    <p>Choose which type of page you'd like to create.</p>
+    {% for page in pages %}
+        <a href="{% url 'astoraccount:page_create' %}?type={{page.type}}">
+            {{ page.title }}
+        </a><br/>
+    {% endfor %}
+
+{% endblock %}
