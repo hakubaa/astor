@@ -21,8 +21,8 @@ class HomePageTest(TestCase):
         self.assertTemplateUsed(response, "astormain/home.html")
 
     def test_sets_proper_link_to_my_astor_for_logged_in_users(self):
-        user = User.objects.create_user("spider", "spider@jago.com", 
-                                        "spiderpass")
+        user = User.objects.create_user(username="spider", 
+                                        password="spiderpass")
         self.client.login(username="spider", password="spiderpass")
         response = self.client.get("/")
         self.assertContains(response, "/account/")

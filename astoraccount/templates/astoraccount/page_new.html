@@ -1,0 +1,13 @@
+<html !doctype>
+    <head>
+    </head>
+
+    <body>
+        <p>Choose which type of page you'd like to create.</p>
+        {% for page in pages %}
+            <a href="{% url 'astoraccount:page_create' %}?type={{page.type}}">
+                {{ page.title }}
+            </a><br/>
+        {% endfor %}
+    </body>
+</html>
