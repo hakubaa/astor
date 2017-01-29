@@ -6,7 +6,7 @@
     {% if user.is_authenticated %}
         <a href="{% url 'astoraccount:index' %}">My Astor</a>
     {% else %}
-        <a href="/login">My Astor</a>
+        <a href="{% url 'astoraccount:login' %}">My Astor</a>
     {% endif %}
 
 {% endblock %}

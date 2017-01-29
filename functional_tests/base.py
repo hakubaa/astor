@@ -5,7 +5,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY, get_user_model
 from django.contrib.sessions.backends.db import SessionStore
 from django.conf import settings
@@ -14,7 +14,7 @@ from django.conf import settings
 User = get_user_model()
 
 
-class FunctionalTest(LiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()

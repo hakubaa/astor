@@ -124,6 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, "../static"))
 
 # Define additional dirs with static files.
 STATICFILES_DIRS = (
@@ -132,3 +133,6 @@ STATICFILES_DIRS = (
 
 # Set user model
 AUTH_USER_MODEL = "astoraccount.User"
+
+
+LOGIN_REDIRECT_URL = "astoraccount:index"

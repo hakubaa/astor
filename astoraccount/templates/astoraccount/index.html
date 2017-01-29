@@ -8,4 +8,14 @@
 {% block content %}
 {{ super }}
     <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
+
+    {% if user.activities.count > 0 %}
+        <ul id="id_list_activities">
+        {% for activity in user.activities.all %}
+            <li>{{activity.message}} on {{activity.timestamp|date:'Y-m-d H:i'}}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        No Activities.
+    {% endif %}
 {% endblock %}

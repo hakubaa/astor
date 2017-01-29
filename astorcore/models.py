@@ -9,7 +9,8 @@ from treebeard.mp_tree import MP_Node
 from astorcore.decorators import register_page
 
 
-class BasePage(MP_Node):
+
+class Page(MP_Node):
     verbose_name = "base page"
 
     # Required for creating hierarchy composed of different Pages
@@ -19,16 +20,14 @@ class BasePage(MP_Node):
     )
 
     def __init__(self, *args, **kwargs):
-        super(BasePage, self).__init__(*args, **kwargs)
+        super(Page, self).__init__(*args, **kwargs)
         # Set content type only once
         if not self.id and not self.content_type_id:
             self.content_type = ContentType.objects.get_for_model(self)
 
     @property
     def specific(self):
-        '''
-        Casts BasePage to specific type stored in content_type.
-        ''' 
+        '''Casts Page to specific type stored in content_type.''' 
         content_type = ContentType.objects.get_for_id(self.content_type_id)
         model_class = content_type.model_class()
         if model_class is None or isinstance(self, model_class):
@@ -37,12 +36,11 @@ class BasePage(MP_Node):
         
 
 @register_page
-class IndexPage(BasePage):
+class IndexPage(Page):
     verbose_name = "index page"
 
     title = models.CharField(
-        max_length=255,
-        null=False, blank=False
+        max_length=255
     )
     abstract = models.TextField(default="")    
     created_date = models.DateTimeField(default=timezone.now)

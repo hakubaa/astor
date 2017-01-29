@@ -3,7 +3,7 @@ import unittest
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from astorcore.models import BasePage, IndexPage, ContentPage
+from astorcore.models import Page, IndexPage, ContentPage
 
 
 User = get_user_model()
@@ -12,13 +12,13 @@ User = get_user_model()
 class PageModelTest(TestCase):
 
     def test_for_adding_children_to_the_page(self):
-        page = BasePage.add_root()
+        page = Page.add_root()
         page.add_child(instance=IndexPage(title="Chapter 1"))
         page.add_child(instance=IndexPage(title="Chapter 2"))
         self.assertEqual(page.get_children_count(), 2)
 
     def test_get_proper_object_from_the_tree(self):
-        root_page = BasePage.add_root()
+        root_page = Page.add_root()
         page1 = root_page.add_child(
             instance=IndexPage(title="Page 1", abstract="Test Page 1")
         )

@@ -1,0 +1,18 @@
+{% extends "astoraccount/base.html" %}
+
+{% block title %}
+{{ super }}
+- Account - Edit Page
+{% endblock %}
+
+{% block content %}
+{{ super }}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        <table>
+        {{ form.as_table }}
+        </table>
+        <input type="submit" value="Publish"/>
+    </form>
+{% endblock %}

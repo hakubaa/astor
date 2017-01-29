@@ -43,57 +43,55 @@ class NewPageTest(FunctionalTest):
         content_page.click()
 
         # He spots input box where he enters the title: "Test Artice"
-        inputbox_title = self.browser.find_element_by_id("id-new-title")
+        inputbox_title = self.browser.find_element_by_id("id_title")
         self.assertEqual(
             inputbox_title.get_attribute("placeholder"),
-            "Enter a title"
+            "Enter a title."
         )
         
         # He types'Test Article' into a text box and presses enter.
         inputbox_title.send_keys("Test Article")
         inputbox_title.send_keys(Keys.ENTER)
 
-        # When he presed Enter, he was shifted toward next inputbox.
-        inputbox_abstract = self.browser.switchTo().activeElement()
+        # When he presed Enter, he was switch to next inputbox.
+        inputbox_abstract = self.browser.switch_to.active_element["value"]
         self.assertEqual(inputbox_abstract.get_attribute("id"), 
-                         "id-new-abstract")
+                         "id_abstract")
 
         # He writes in Absract: "Testing ASTOR. How to create new page with 
         # content" and presses enter.
-        inputbox_abstract.send_keys("Testing ASTOR. How to create new page"
+        inputbox_abstract.send_keys("Testing ASTOR. How to create new page "
                                     "with content.")
-        inputbox_title.send_keys(Keys.ENTER)
 
         # He moves to body section where he can enter the proper content of
         # his new page. 
-        inputbox_body = self.browser.switchTo().activeElement()
-        self.assertEqual(inputbox_abstract.get_attribute("id"), 
-                         "id-new-body")
-
+        inputbox_body = self.browser.find_element_by_id("id_body")
         inputbox_body.send_keys("Testing. I will put here more later.")   
 
         # After filling all fields he clicks 'Publish' button.
-        self.browser.find_element_by_link_text("Publish").click()
+        self.browser.find_element_by_xpath(
+            "//input[@type='submit' and @value='Publish']"
+        ).click()
 
         # After a while information appears that the article has been
         # successfuly published.
-        self.browser.implicitly_wait(3)
-        self.browser.find_elements_by_xpath(
-            "//*[contains(text(), 'Published on')]"
+        messages = self.browser.find_element_by_class_name("messages").\
+                        find_elements_by_tag_name("li")
+        self.assertIn(
+            "The page was updated and published successfully.",
+            [msg.text for msg in messages]
         )
 
         # Spider is very proud of himself for creating new page and clicks
         # link with 'My Astor' text to return to main page of his profile.
         self.browser.find_element_by_link_text("My Astor").click()
+        self.browser.implicitly_wait(5)
 
         # The page changes and he sees new entry in his latest activity section.
         # It says: "New article published on <date>"
-        act_list = self.browser.find_element_by_id("id_list_activities")
-        acts = activities.find_elements_by_tag_name("li")
-        self.assertIn(
-            "New article published on",
-            [act.text for act in acts]
-        )
+        acts_list = self.browser.find_element_by_id("id_list_activities")
+        acts = acts_list.find_elements_by_tag_name("li")
+        self.assertTrue(any("Page updated" in act.text for act in acts))
 
         # Spider clicks "Log out" and close the browser.
-        self.browser.find_element_by_link_text("Log out").click()
+        self.browser.find_element_by_link_text("Log Out").click()
