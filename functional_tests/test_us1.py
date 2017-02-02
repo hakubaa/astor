@@ -6,14 +6,6 @@ from selenium.webdriver.common.keys import Keys
 from functional_tests.base import FunctionalTest
 
 
-@unittest.skip
-class FunctionalTestTest(FunctionalTest):
-
-    def test_can_start_a_list_and_retrieve_it_later(self):
-        self.browser.get(self.live_server_url)
-        self.assertIn("ASTOR", self.browser.title)
-        self.fail("Finish the test!")
-
 
 class NewPageTest(FunctionalTest):
 

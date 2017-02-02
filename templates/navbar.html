@@ -1,0 +1,33 @@
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle"
+                data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'astormain:home' %}">ASTOR</a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav" id="mainNavbar">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'astoraccount:index' %}">My Astor</a></li>
+                {% else %}
+                    <li><a href="{% url 'astoraccount:login' %}">My Astor</a></li>
+                {% endif %}
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'astoraccount:logout' %}">Log Out</a></li>
+                {% else %}
+                    <li><a href="{% url 'astoraccount:login' %}">Log In</a></li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+</div>

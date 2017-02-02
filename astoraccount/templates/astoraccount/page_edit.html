@@ -1,4 +1,4 @@
-{% extends "astoraccount/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}
 {{ super }}
@@ -7,7 +7,6 @@
 
 {% block content %}
 {{ super }}
-
     <form action="" method="POST">
         {% csrf_token %}
         <table>

@@ -1,55 +1,22 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.template.defaultfilters import slugify
 
-from astorcore.models import Page, IndexPage
+from astorcore.models import Page, IndexPage, RootPage
 from astoraccount.models import Activity
+
 
 User = get_user_model()
 
 
 class UserTest(TestCase):
 
-    def test_init_base_page_for_new_users(self):
+    def test_init_root_page_for_new_users(self):
         user = User.objects.create_user(username="Test", password="test")
-        self.assertEqual(Page.objects.count(), 1)
-        page = Page.objects.first()
+        self.assertEqual(RootPage.objects.count(), 1)
+        page = RootPage.objects.first()
         self.assertEqual(user.root_page, page)
-
-    def test_accepts_root_page_in_constructor(self):
-        page = Page.add_root()
-        user = User.objects.create(username="Test", password="test",
-                                   root_page=page)
-        self.assertEqual(user.root_page, page)
-
-    def test_two_users_with_the_same_root_page(self):
-        user1 = User.objects.create(username="Test", password="test")
-        user2 = User.objects.create(username="Test2", password="test",
-                                    root_page=user1.root_page)
-        users = list(User.objects.all())
-        self.assertEqual(len(users), 2)
-        self.assertEqual(users[0].root_page, users[1].root_page)
-        self.assertEqual(Page.objects.count(), 1)
-
-    def test_for_changing_user_root_page(self):
-        user = User.objects.create(username="Test", password="test")
-        page = Page.add_root()
-        user.set_root_page(page)
-        self.assertEqual(user.root_page, page)
-
-    def test_set_root_page_removes_previous_page_when_required(self):
-        user = User.objects.create(username="Test", password="test")
-        page = Page.add_root()
-        user.set_root_page(page, remove_current_root=True)
-        self.assertEqual(Page.objects.count(), 1)
-
-    def test_set_root_does_not_delete_previous_root_if_other_owners(self):
-        user1 = User.objects.create(username="Test", password="test")
-        user2 = User.objects.create(username="Test2", password="test",
-                                    root_page=user1.root_page)
-        page = Page.add_root()
-        user2.set_root_page(page, remove_current_root=True)
-        self.assertEqual(Page.objects.count(), 2)
 
     def test_add_page_adds_page_to_user_pages_hierarchy(self):
         user = User.objects.create_user(username="Test", password="test")
@@ -69,6 +36,11 @@ class UserTest(TestCase):
         user = User.objects.create_user(username="Test", password="test")
         user.add_activity(message="Win a lottery!", number=Activity.UPDATE_USER)
         self.assertEqual(user.activities.count(), 1)
+
+    def test_creates_slug_on_the_base_of_username(self):
+        user = User.objects.create_user(username="The Maste of the Universe", 
+                                        password="test")
+        self.assertEqual(user.slug, slugify(user.username))
 
 
 class ActivityTest(TestCase):

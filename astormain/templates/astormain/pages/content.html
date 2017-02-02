@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super }}
+<h3 id="id_page_title">{{ page.title }}</h3>
+<p id="id_page_abstract">{{ page.abstract }}</p>
+<p id="id_page_body">{{ page.body }}</p>
+{% endblock %}

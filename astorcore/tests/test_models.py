@@ -2,8 +2,9 @@ import unittest
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
-from astorcore.models import Page, IndexPage, ContentPage
+from astorcore.models import RootPage, Page, IndexPage, ContentPage
 
 
 User = get_user_model()
@@ -29,3 +30,22 @@ class PageModelTest(TestCase):
         pages = root_page.get_children()
         self.assertEqual(pages[0].specific.title, page1.title)
         self.assertEqual(pages[1].specific.body, page2.body)
+
+    def test_for_setting_page_owner(self):
+        user = User.objects.create(username="Test", password="test")
+        page = RootPage.objects.first()
+        self.assertEqual(page.owner, user)
+
+    def test_get_root_owner_returns_owner_of_root_page(self):
+        user = User.objects.create(username="Test", password="test")
+        index = user.add_page(IndexPage(title="Index"))
+        page = index.add_child(instance=ContentPage(title="Entry #1"))
+        self.assertEqual(page.get_root_owner(), user)
+
+    def test_get_absolute_url(self):
+        user = User.objects.create(username="Test", password="test")
+        page = user.add_page(instance=IndexPage(title="Test"))
+        self.assertEqual(
+            page.get_absolute_url(), 
+            reverse("astormain:entry", kwargs={"username": user.slug,
+                                               "page_id": page.id}))
