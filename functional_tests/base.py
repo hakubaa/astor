@@ -3,11 +3,11 @@ import sys
 import time
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY, get_user_model
 from django.contrib.sessions.backends.db import SessionStore
+from django.urls import reverse
 from django.conf import settings
 
 
@@ -37,4 +37,11 @@ class FunctionalTest(StaticLiveServerTestCase):
             value=session.session_key,
             path='/',
         ))
+
+    def log_in_user(self, username, password):
+        self.browser.get()
+
+    def create_user(self, username="Test", password="test"):
+        user = User.objects.create_user(username=username, password=password)
+        return user
 

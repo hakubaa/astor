@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "astoraccount/base.html" %}
 
 {% block title %}
 {{ super }}
@@ -7,11 +7,17 @@
 
 {% block content %}
 {{ super }}
-    <form action="" method="POST">
-        {% csrf_token %}
-        <table>
-        {{ form.as_table }}
-        </table>
-        <input type="submit" value="Publish"/>
-    </form>
+    {% if root_page %}
+        <a href="{% url 'astoraccount:page_new' %}">Add child page</a>
+    {% endif %}
+    {% if form %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            <table>
+            {{ form.as_table }}
+            </table>
+            <input type="submit" name="page_action" value="Publish"/>
+            <input type="submit" name="page_action" value="Save Draft">
+        </form>
+    {% endif %}
 {% endblock %}

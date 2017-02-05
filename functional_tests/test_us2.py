@@ -1,7 +1,3 @@
-import unittest
-
-from selenium import webdriver
-
 from astorcore.models import ContentPage, Page
 from astoraccount.models import User
 

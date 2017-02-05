@@ -6,17 +6,24 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 
-from astorcore.models import Page, ContentPage
+from astorcore.models import BasePage, ContentPage
 from astorcore.decorators import get_page_models, get_forms
 from astoraccount.models import Activity
 import astoraccount.forms
 
 
+@login_required
 def index_page(request):
     '''Returns root page of the account'''
     return render(request, "astoraccount/index.html")
 
 
+@login_required
+def page_view(request):
+    pass
+
+
+@login_required
 def page_new(request):
     '''Returns page to select type of new page'''
     pages = list()
@@ -48,7 +55,7 @@ def page_create(request):
 
 @login_required
 def page_edit(request, page_id):
-    page = Page.objects.filter(id=page_id).first()
+    page = BasePage.objects.filter(id=page_id).first()
 
     # Find the proper form for the page.
     form_cls = None
@@ -57,6 +64,7 @@ def page_edit(request, page_id):
             form_cls = form
             break
 
+    form = None
     if request.method == "POST":
         form = form_cls(request.POST, instance=page.specific)
         if form.is_valid:
@@ -71,7 +79,7 @@ def page_edit(request, page_id):
                 fail_silently=True
             )
     else:
-        form = form_cls(instance=page.specific)
-
+        if form_cls:
+            form = form_cls(instance=page.specific)
     return render(request, "astoraccount/page_edit.html", 
-                  {"form": form})
+                  {"form": form, "root_page": page.is_root()})

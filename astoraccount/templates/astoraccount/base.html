@@ -1,0 +1,78 @@
+{% load static %}
+
+<!DOCTYPE html>
+    <head>
+        <title>ASTOR {% block title %}{% endblock %}</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- <link rel="stylesheet/less" href="{% static 'bootstrap/less/bootstrap.less' %}"> -->
+        <!-- <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}"> -->
+        <link rel="stylesheet" href="{% static 'astoraccount/css/normalize.css' %}">
+        <link rel="stylesheet" href="{% static 'astoraccount/css/core.css' %}">
+        {% block styles %}{% endblock %}
+        <script src="{% static 'js/less.min.js' %}"></script>
+        {% block scripts %}{% endblock %}
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="nav-wrapper">
+                <div class="inner">
+                    <nav class="nav-main">
+                        <ul>
+                            <li>
+                                <a href="{% url 'astoraccount:page_edit' user.root_page.id %}" 
+                                    class="icon icon-folder-open-inverse dl-trigger">
+                                    Analyses
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="icon icon-folder-open-inverse dl-trigger">
+                                    Mailbox
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="icon icon-folder-open-inverse dl-trigger">
+                                    Network
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="icon icon-folder-open-inverse dl-trigger">
+                                    Account
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="content-wrapper">  
+                <div class="content">
+                    <div class="messages">
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div id="nav-toggle" class="nav-toggle icon text-replace">Menu</div>
+
+                    <header class="merged nice-padding">
+                        <div>
+                            <div>
+                                <h1>Your Personal Analyses Storage (ASTOR)</h1>
+                                <h2>{{user.username}}</h2>
+                            </div>
+                        </div>
+                    </header>
+
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+        {% block scripts_body %}{% endblock %}
+    </body>
+</html>

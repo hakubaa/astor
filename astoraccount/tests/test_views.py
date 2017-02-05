@@ -1,30 +1,41 @@
 from django.test import TestCase
-from django.urls import resolve
-from django.contrib.auth import get_user_model
+from django.urls import resolve, reverse
+from django.contrib.auth import get_user_model, get_user
 from django.contrib.contenttypes.models import ContentType
 
 from astoraccount.views import index_page
-from astorcore.models import Page, ContentPage
+from astorcore.models import BasePage, ContentPage
 from astoraccount.forms import ContentPageForm
 import astorcore.decorators as decos
 
 User = get_user_model()
 
 
-class AccountIndexPageTest(TestCase):
+class AstorTestCase(TestCase):
+
+    def create_and_login_user(self, username="Test", password="test"):
+        user = User.objects.create_user(username=username, password=password)
+        self.client.login(username=username, password=password)
+        return user
+
+
+class AccountIndexPageTest(AstorTestCase):
 
     def test_account_root_url_resolves_to_index_view(self):
+        self.create_and_login_user()
         found = resolve("/account/")
         self.assertEqual(found.func, index_page)
 
     def test_uses_correct_template(self):
+        self.create_and_login_user()
         response = self.client.get("/account/")
         self.assertTemplateUsed(response, "astoraccount/index.html")
 
 
-class PageNewTest(TestCase):
+class PageNewTest(AstorTestCase):
 
     def test_renders_correct_template(self):
+        self.create_and_login_user()
         response = self.client.get("/account/pages/new")
         self.assertTemplateUsed(response, "astoraccount/page_new.html")
 
@@ -34,13 +45,14 @@ class PageNewTest(TestCase):
 
         # Register few new type of pages
         @decos.register_page
-        class EmptyPage(Page):
+        class EmptyPage(BasePage):
             verbose_name = "empty page"
 
         @decos.register_page
-        class LinkPage(Page):
+        class LinkPage(BasePage):
             verbose_name = "link page"
 
+        self.create_and_login_user()
         response = self.client.get("/account/pages/new")
         content = response.content.decode().lower()
 
@@ -48,12 +60,7 @@ class PageNewTest(TestCase):
         self.assertIn(LinkPage.verbose_name, content) 
 
 
-class PageCreateTest(TestCase):
-
-    def create_and_login_user(self, username="Test", password="test"):
-        user = User.objects.create_user(username=username, password=password)
-        self.client.login(username=username, password=password)
-        return user
+class PageCreateTest(AstorTestCase):
 
     def test_redirects_to_page_edit(self):
         user = self.create_and_login_user()
@@ -67,7 +74,7 @@ class PageCreateTest(TestCase):
         user = self.create_and_login_user()
         self.client.get("/account/pages/create", 
                         {"type": "astorcore:contentpage"})
-        self.assertEqual(Page.objects.count(), 2)
+        self.assertEqual(BasePage.objects.count(), 1)
         user = User.objects.filter(username="Test").first()
         self.assertEqual(user.root_page.get_children_count(), 1)
 
@@ -80,12 +87,7 @@ class PageCreateTest(TestCase):
         self.assertIsInstance(page.specific, ContentPage)
 
 
-class PageEditTest(TestCase):
-
-    def create_and_login_user(self, username="Test", password="test"):
-        user = User.objects.create_user(username=username, password=password)
-        self.client.login(username=username, password=password)
-        return user
+class PageEditTest(AstorTestCase):
 
     def test_renders_correct_template(self):
         user = self.create_and_login_user()
@@ -105,8 +107,26 @@ class PageEditTest(TestCase):
         self.client.post("/account/pages/%d" % page.id,
                         {"title": "First Edit Ever", "abstract": "Simple Page",
                          "body": "Nice body"})
-        page = Page.objects.get(id=page.id)
+        page = BasePage.objects.get(id=page.id)
         self.assertEqual(page.specific.title, "First Edit Ever")
         self.assertEqual(page.specific.abstract, "Simple Page")
         self.assertEqual(page.specific.body, "Nice body")
 
+
+class RootPageTest(AstorTestCase):
+    
+    def test_renders_correct_template(self):
+        user = self.create_and_login_user()
+        response = self.client.get("/account/pages/%d" % user.root_page.id)
+        self.assertTemplateUsed(response, "astoraccount/page_edit.html")     
+
+
+class AuthViewsTest(AstorTestCase):
+
+    def test_for_logging_in_using_login_view(self):
+        user = User.objects.create_user(username="Test", password="test")
+        response = self.client.post(reverse("astoraccount:login"),
+                                    {"username": "Test", "password": "test"})
+        self.client.login(username="Test", password="test")
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)

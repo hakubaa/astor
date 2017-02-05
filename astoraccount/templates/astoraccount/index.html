@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends "astoraccount/base.html" %}
+{% load static %}
 
 {% block title %}
 {{ super }}
@@ -7,8 +8,8 @@
 
 {% block content %}
 {{ super }}
+<section>
     <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
-
     {% if user.activities.count > 0 %}
         <ul id="id_list_activities">
         {% for activity in user.activities.all %}
@@ -18,4 +19,7 @@
     {% else %}
         No Activities.
     {% endif %}
+</section>
 {% endblock %}
+
+

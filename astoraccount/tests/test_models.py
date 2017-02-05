@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
 
-from astorcore.models import Page, IndexPage, RootPage
+from astorcore.models import BasePage, IndexPage, RootPage
 from astoraccount.models import Activity
 
 
@@ -54,9 +54,9 @@ class ActivityTest(TestCase):
         self.assertEqual(act.object_id, user.id)
 
     def test_set_page_as_content_object(self):
-        page = Page.add_root()
+        page = BasePage.add_root()
         act = Activity(message="Create new page.", content_object=page)
         act.save()
         ctype = act.content_type
-        self.assertEqual(ctype, ContentType.objects.get_for_model(Page))
+        self.assertEqual(ctype, ContentType.objects.get_for_model(BasePage))
         self.assertEqual(act.object_id, page.id)
