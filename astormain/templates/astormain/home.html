@@ -8,7 +8,7 @@
     {% for entry in newest_entries %}
         <li>
             <a href="{{ entry.get_absolute_url }}">{{entry.title}}</a>
-            (<span class="entry_author">{{entry.get_root_owner}}</span>)
+            (<span class="entry_author">{{entry.user.username}}</span>)
         </li>
     {% endfor %}
     </ul>

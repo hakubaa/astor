@@ -1,3 +1,2 @@
 Django==1.10.5
-django-treebeard==4.1.0
 selenium==3.0.2

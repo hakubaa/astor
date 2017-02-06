@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 
-from astorcore.models import BasePage, ContentPage
+from astorcore.models import Page
 from astorcore.decorators import get_page_models, get_forms
 from astoraccount.models import Activity
 import astoraccount.forms
@@ -22,6 +22,9 @@ def index_page(request):
 def page_view(request):
     pass
 
+@login_required
+def analyses_page(request):
+    pass
 
 @login_required
 def page_new(request):
@@ -43,7 +46,7 @@ def page_create(request):
         app_label, model = request.GET["type"].split(":")
         ctype = ContentType.objects.get(app_label=app_label, model=model)
         cls = ctype.model_class()
-        page = user.root_page.add_child(instance=cls())
+        page = user.add_page(instance=cls())
         user.add_activity(
             number=Activity.NEW_PAGE, content_object=page,
             message="Page created: \"%s\" id=%d type=%s" % (page.specific.title, 
@@ -55,7 +58,7 @@ def page_create(request):
 
 @login_required
 def page_edit(request, page_id):
-    page = BasePage.objects.filter(id=page_id).first()
+    page = Page.objects.filter(id=page_id).first()
 
     # Find the proper form for the page.
     form_cls = None
@@ -81,5 +84,5 @@ def page_edit(request, page_id):
     else:
         if form_cls:
             form = form_cls(instance=page.specific)
-    return render(request, "astoraccount/page_edit.html", 
-                  {"form": form, "root_page": page.is_root()})
+
+    return render(request, "astoraccount/page_edit.html", {"form": form})

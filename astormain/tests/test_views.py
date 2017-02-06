@@ -5,7 +5,7 @@ from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
 
 from astormain.views import home_page
-from astorcore.models import ContentPage, BasePage
+from astorcore.models import ContentPage, Page
 
 
 User = get_user_model()
@@ -35,7 +35,7 @@ class HomePageTest(TestCase):
     def test_displays_titles_of_the_latest_entries(self):
         user = User.objects.create(username="Test", password="test")
         page = user.add_page(instance=ContentPage(title="My First Entry"))
-        page.publish()
+        pub_page = page.publish()
         self.client.login(username="Test", password="test")
         response = self.client.get(reverse("astormain:home"))
         self.assertContains(response, page.specific.title)
@@ -45,7 +45,7 @@ class HomePageTest(TestCase):
         page1 = user.add_page(ContentPage(title="My First Entry"))
         page2 = user.add_page(ContentPage(title="My Second Entry"))
         pub_page = page2.publish()
-        self.assertEqual(BasePage.objects.count(), 3)
+        self.assertEqual(Page.objects.count(), 3)
         self.client.login(username="Test", password="test")
         response = self.client.get(reverse("astormain:home"))
         self.assertNotContains(response, page1.specific.title)

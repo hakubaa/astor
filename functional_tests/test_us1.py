@@ -24,6 +24,8 @@ class NewPageTest(FunctionalTest):
         # label: 'Create Your First Page'.
         self.browser.find_element_by_link_text("Create Your First Page").click()
 
+        import time; time.sleep(5)
+
         # The page updates and he is asked for choosing the type of the page. He
         # has two choices: 'Content Page', 'Index Page'. There is also short
         # explanating but he is too lazy to read it. 

@@ -5,8 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.template.defaultfilters import slugify
 
-from astorcore.models import RootPage
-
 
 class Activity(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
@@ -30,11 +28,6 @@ class Activity(models.Model):
 
 class User(AbstractUser):
 
-    root_page = models.OneToOneField(
-        RootPage, on_delete=models.CASCADE, related_name="owner",
-        blank=True, null=True
-    )
-
     slug = models.SlugField(unique=True)
 
     @property
@@ -45,18 +38,15 @@ class User(AbstractUser):
         super(AbstractUser, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        '''
-        Saves object to db. Creates new root page for the user or adds user
-        to owners of other page if root_page passed in the consturctor.
-        '''
-        if self.pk is None:
-            self.root_page = RootPage.add_root()
         self.slug = slugify(self.username)
         super(AbstractUser, self).save(*args, **kwargs)
 
     def add_page(self, instance):
-        '''Adds subpage to root page.'''
-        return self.root_page.add_child(instance=instance)
+        '''Adds page to pages.'''
+        if instance.pk is None:
+            instance.save()
+        self.pages.add(instance)
+        return instance
 
     def add_activity(self, *args, instance=None, **kwargs):
         '''Registers new activity for the user.'''

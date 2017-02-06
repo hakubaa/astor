@@ -7,9 +7,6 @@
 
 {% block content %}
 {{ super }}
-    {% if root_page %}
-        <a href="{% url 'astoraccount:page_new' %}">Add child page</a>
-    {% endif %}
     {% if form %}
         <form action="" method="POST">
             {% csrf_token %}

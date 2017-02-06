@@ -20,7 +20,13 @@
                     <nav class="nav-main">
                         <ul>
                             <li>
-                                <a href="{% url 'astoraccount:page_edit' user.root_page.id %}" 
+                                <a href="{% url 'astoraccount:index' %}" 
+                                    class="icon icon-folder-open-inverse dl-trigger">
+                                    My Astor
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'astoraccount:analyses' %}" 
                                     class="icon icon-folder-open-inverse dl-trigger">
                                     Analyses
                                 </a>
@@ -40,21 +46,18 @@
                                     Account
                                 </a>
                             </li>
+                            <li>
+                                <a href="{% url 'astoraccount:logout' %}" 
+                                   class="icon icon-folder-open-inverse dl-trigger">
+                                    Log Out
+                                </a>
+                            </li>
                         </ul>
                     </nav>
                 </div>
             </div>
             <div class="content-wrapper">  
                 <div class="content">
-                    <div class="messages">
-                        {% if messages %}
-                        <ul class="messages">
-                            {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </div>
                     <div id="nav-toggle" class="nav-toggle icon text-replace">Menu</div>
 
                     <header class="merged nice-padding">
@@ -66,6 +69,17 @@
                         </div>
                     </header>
 
+                    <section>
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                                {{ message }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </section>
                     {% block content %}{% endblock %}
                 </div>
             </div>

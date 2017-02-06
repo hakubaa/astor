@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
 
-from astorcore.models import BasePage, IndexPage, RootPage
+from astorcore.models import BasePage, IndexPage
 from astoraccount.models import Activity
 
 
@@ -12,17 +12,11 @@ User = get_user_model()
 
 class UserTest(TestCase):
 
-    def test_init_root_page_for_new_users(self):
-        user = User.objects.create_user(username="Test", password="test")
-        self.assertEqual(RootPage.objects.count(), 1)
-        page = RootPage.objects.first()
-        self.assertEqual(user.root_page, page)
-
     def test_add_page_adds_page_to_user_pages_hierarchy(self):
         user = User.objects.create_user(username="Test", password="test")
         page = IndexPage(title="My First Page")
         user.add_page(page)
-        self.assertEqual(user.root_page.get_children().count(), 1)
+        self.assertEqual(user.pages.count(), 1)
 
     def test_add_activity_registers_new_activity_for_the_user(self):
         user = User.objects.create_user(username="Test", password="test")
@@ -54,7 +48,7 @@ class ActivityTest(TestCase):
         self.assertEqual(act.object_id, user.id)
 
     def test_set_page_as_content_object(self):
-        page = BasePage.add_root()
+        page = BasePage.objects.create()
         act = Activity(message="Create new page.", content_object=page)
         act.save()
         ctype = act.content_type
