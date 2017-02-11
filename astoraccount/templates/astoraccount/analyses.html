@@ -1,0 +1,16 @@
+{% extends "astoraccount/base.html" %}
+{% load static %}
+
+{% block title %}
+{{ super }}
+- Analyses
+{% endblock %}
+
+{% block content %}
+{{ super }}
+<section>
+    <a href="{% url 'astoraccount:page_new' %}">Add New Analysis</a>
+</section>
+{% endblock %}
+
+

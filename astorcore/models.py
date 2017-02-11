@@ -72,6 +72,7 @@ class BasePage(Page):
         on_delete=models.SET_NULL
     )
 
+    # Distinction between drafts and published pages
     editable = models.BooleanField(default=True, editable=False)
     live = models.BooleanField(default=False, editable=False)
 

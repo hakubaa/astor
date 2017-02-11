@@ -2,7 +2,7 @@
 
 {% block title %}
 {{ super }}
-- Account - Edit Page
+- Edit Page
 {% endblock %}
 
 {% block content %}
@@ -13,8 +13,8 @@
             <table>
             {{ form.as_table }}
             </table>
-            <input type="submit" name="page_action" value="Publish"/>
-            <input type="submit" name="page_action" value="Save Draft">
+            <button name="action_type" value="save_draft" type="submit">Save Draft</button>
+            <button name="action_type" value="publish" type="submit">Save &amp; Publish</button>
         </form>
     {% endif %}
 {% endblock %}

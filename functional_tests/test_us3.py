@@ -45,14 +45,9 @@ class CreatingDraftsTest(FunctionalTest):
         password.send_keys("abcd")
         password.send_keys(Keys.ENTER)
 
-        import time; time.sleep(2)
-
         # Fly was positively authenticated and automatically redirected
         # to her account page.
-        self.assertEqual(
-            self.browser.current_url,
-            os.path.join(self.live_server_url, "account/")
-        )
+        self.wait_for_page_which_url_ends_with("account/")
 
         # She notices information persuading her to create her first entry.
         self.browser.find_element_by_link_text("Create Your First Page")
@@ -60,23 +55,16 @@ class CreatingDraftsTest(FunctionalTest):
         # Fly ignores the prompt and clicks "Analyses" from the left sidebar.
         self.browser.find_element_by_link_text("Analyses").click()
 
-        import time; time.sleep(3)
-
-        # Browser shows her root page.
-        self.assertEqual(
-            self.browser.current_url,
-            self.live_server_url + reverse("astoraccount:page_edit", 
-                kwargs={"page_id": user.root_page.id})
-        )
-
         # The page changes and she sees a link with text 'Add child page' which
         # she clicks.
-        self.browser.find_element_by_link_text("Add child page").click()
+        self.wait_for_page_which_url_ends_with("account/analyses/")
+        self.browser.find_element_by_link_text("Add New Analysis").click()
 
         # The list with types of pages appears and she select 'Content Page'
         self.browser.find_element_by_link_text("Content Page").click()
 
         # She fills the forms.
+        self.wait_for_element_with_id("id_title", timeout=15)
         self.fill_content_page_form(
             title = "Flies are super!",
             abstract = "The past and future of our species.",

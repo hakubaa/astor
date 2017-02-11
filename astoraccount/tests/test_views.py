@@ -1,11 +1,13 @@
+import unittest
+
 from django.test import TestCase
 from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model, get_user
 from django.contrib.contenttypes.models import ContentType
 
 from astoraccount.views import index_page
-from astorcore.models import BasePage, ContentPage
-from astoraccount.forms import ContentPageForm
+from astorcore.models import BasePage, ContentPage, IndexPage, Page
+from astoraccount.forms import ContentPageForm, IndexPageForm
 import astorcore.decorators as decos
 
 User = get_user_model()
@@ -96,27 +98,63 @@ class PageEditTest(AstorTestCase):
         user = self.create_and_login_user()
         page = user.add_page(instance=ContentPage())
         response = self.client.get(reverse("astoraccount:page_edit", 
-                                           kwargs={"page_id": page.id}),)
+                                           kwargs={"pk": page.pk}))
         self.assertTemplateUsed(response, "astoraccount/page_edit.html")
+
+    def test_redirects_to_404_when_invalid_page_number(self):
+        user = self.create_and_login_user()
+        page = user.add_page(instance=ContentPage())
+        response = self.client.get(reverse("astoraccount:page_edit", 
+                                           kwargs={"pk": page.pk+2}))        
+        self.assertRedirects(response, reverse("astoraccount:404"))
 
     def test_for_passing_correct_form_to_template(self):
         user = self.create_and_login_user()
         page = user.add_page(instance=ContentPage())
         response = self.client.get(reverse("astoraccount:page_edit", 
-                                           kwargs={"page_id": page.id}),)
-        self.assertIsInstance(response.context["form"], ContentPageForm)
+                                           args=(page.id,)))
+        self.assertEqual(type(response.context["form"]), ContentPageForm)
+
+    def test_for_passing_correct_form_to_tempalte2(self):
+        user = self.create_and_login_user()
+        page = user.add_page(instance=IndexPage())
+        response = self.client.get(reverse("astoraccount:page_edit", 
+                                           args=(page.id,)))
+        self.assertEqual(type(response.context["form"]), IndexPageForm)        
 
     def test_for_saving_data_from_form(self):
         user = self.create_and_login_user()
         page = user.add_page(instance=ContentPage())
         self.client.post(reverse("astoraccount:page_edit", 
-                                 kwargs={"page_id": page.id}),
+                                 kwargs={"pk": page.pk}),
                         {"title": "First Edit Ever", "abstract": "Simple Page",
                          "body": "Nice body"})
         page = BasePage.objects.get(id=page.id)
         self.assertEqual(page.specific.title, "First Edit Ever")
         self.assertEqual(page.specific.abstract, "Simple Page")
-        self.assertEqual(page.specific.body, "Nice body")    
+        self.assertEqual(page.specific.body, "Nice body")
+
+    def test_for_saving_draft(self):
+        user = self.create_and_login_user()
+        page = user.add_page(instance=ContentPage())
+        self.client.post(reverse("astoraccount:page_edit", 
+                                 kwargs={"pk": page.pk}),
+                        {"title": "First Edit Ever", "abstract": "Simple Page",
+                         "body": "Nice body", "action_type": "save_draft"})
+        page.refresh_from_db()
+        self.assertEqual(Page.objects.count(), 1)
+        self.assertIsNone(page.published_page)
+
+    def test_for_publishing_page(self):
+        user = self.create_and_login_user()
+        page = user.add_page(instance=ContentPage())
+        self.client.post(reverse("astoraccount:page_edit", 
+                                 kwargs={"pk": page.pk}),
+                        {"title": "First Edit Ever", "abstract": "Simple Page",
+                         "body": "Nice body", "action_type": "publish"})       
+        self.assertEqual(Page.objects.count(), 2)
+        page.refresh_from_db()
+        self.assertIsNotNone(page.published_page)
 
 
 class AuthViewsTest(AstorTestCase):
@@ -128,3 +166,11 @@ class AuthViewsTest(AstorTestCase):
         self.client.login(username="Test", password="test")
         user = get_user(self.client)
         self.assertTrue(user.is_authenticated)
+
+
+class AnalysesPageTest(AstorTestCase):
+
+    def test_renders_correct_template(self):
+        user = self.create_and_login_user()
+        response = self.client.get(reverse("astoraccount:analyses")) 
+        self.assertTemplateUsed(response, "astoraccount/analyses.html")

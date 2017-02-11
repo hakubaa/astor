@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'astormain',
     'astoraccount',
     'astor4tests',
-    'treebeard',
     
     'django.contrib.admin',
     'django.contrib.auth',
