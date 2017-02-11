@@ -7,8 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 
-from django.views.generic import TemplateView
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic import TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from astorcore.models import Page
@@ -17,48 +16,57 @@ from astoraccount.models import Activity
 from astoraccount.forms import ContentPageForm
 
 
-@login_required
-def index_page(request):
-    return render(request, "astoraccount/index.html")
+class AccountIndexView(LoginRequiredMixin, TemplateView):
+    template_name = "astoraccount/index.html"
 
-
-@login_required
-def page_view(request):
-    pass
+    def get_context_data(self, *args, **kwargs):
+        context = super(AccountIndexView, self).get_context_data(*args, **kwargs)
+        # Find recent edits, but do not show published pages.
+        recent_edits = [page.specific for page in self.request.user.pages.all()
+                                      if page.specific.editable]
+        context["recent_edits"] = recent_edits
+        return context
 
 
 class AnalysesView(LoginRequiredMixin, TemplateView):
     template_name = "astoraccount/analyses.html"
 
 
-@login_required
-def page_new(request):
-    '''Returns page to select type of new page'''
-    pages = list()
-    for page in get_page_models():
-        content_type = ContentType.objects.get_for_model(page)    
-        pages.append({
-            "title": page.verbose_name.title(), 
-            "type": content_type.app_label + ":" + content_type.model
-        })
-    return render(request, "astoraccount/page_new.html", {"pages": pages})
+class NewPageView(LoginRequiredMixin, TemplateView):
+    template_name = "astoraccount/page_new.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(NewPageView, self).get_context_data(*args, **kwargs)
+
+        pages = list()
+        for page in get_page_models():
+            content_type = ContentType.objects.get_for_model(page)    
+            pages.append({
+                "title": page.verbose_name.title(), 
+                "type": content_type.app_label + ":" + content_type.model
+            })
+        context["pages"] = pages
+
+        return context
 
 
-@login_required
-def page_create(request):
-    user = request.user
-    if user.is_authenticated:
-        app_label, model = request.GET["type"].split(":")
-        ctype = ContentType.objects.get(app_label=app_label, model=model)
-        cls = ctype.model_class()
-        page = user.add_page(instance=cls())
-        user.add_activity(
-            number=Activity.NEW_PAGE, content_object=page,
-            message="Page created: \"%s\" id=%d type=%s" % (page.specific.title, 
-                page.id, page.specific.verbose_name.title())
-        )
+class CreatePageView(LoginRequiredMixin, View):
 
-    return redirect(reverse("astoraccount:page_edit", kwargs={"pk": page.pk}))
+    def get(self, request):
+        user = self.request.user
+        if user.is_authenticated:
+            app_label, model = self.request.GET["type"].split(":")
+            ctype = ContentType.objects.get(app_label=app_label, model=model)
+            cls = ctype.model_class()
+            page = user.add_page(instance=cls())
+            
+            user.add_activity(
+                number=Activity.NEW_PAGE, content_object=page,
+                message="Page created: \"%s\" id=%d type=%s" % (page.specific.title, 
+                    page.id, page.specific.verbose_name.title())
+            )
+
+        return redirect(reverse("astoraccount:page_edit", kwargs={"pk": page.pk}))    
 
 
 @login_required
@@ -92,12 +100,12 @@ def page_edit(request, pk):
             action = request.POST.get("action_type", "save_draft")
             if action == "save_draft":
                 messages.success(
-                    request, _("The draft was saved."), fail_silently=True
+                    request, _("The draft has been saved."), fail_silently=True
                 )
             else:
                 pub_page = page.publish()
                 messages.success(
-                    request, _("The analysis was saved and published."), 
+                    request, _("The analysis has been saved and published."), 
                     fail_silently=True
                 )
 

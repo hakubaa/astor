@@ -4,7 +4,21 @@
 {% block content %}
 {{ super }}
 <section>
-    <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
+    {% if not recent_edits %}
+        <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
+    {% else %}
+        Your Recent Edits
+        <ul id="id_recent_edits">
+            {% for page in recent_edits %}
+                <li><a href="{% url 'astoraccount:page_edit' page.id %}">
+                    {{ page.title }}
+                </a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</section>
+<section>
+    Your Recent Activities
     {% if user.activities.count > 0 %}
         <ul id="id_list_activities">
         {% for activity in user.activities.all %}

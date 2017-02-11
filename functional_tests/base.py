@@ -83,3 +83,36 @@ class FunctionalTest(StaticLiveServerTestCase):
                 self.browser.current_url, 
                 self.live_server_url + "/account/"
             )
+
+    def find_section_with_the_newest_entries(self):
+        return self.browser.find_element_by_id("id_newest_entries")
+
+    def check_for_entry_in_newest_section(self, title, assert_true=True):
+        section = self.find_section_with_the_newest_entries()
+        entries = section.find_elements_by_tag_name("li")
+        assert_func = self.assertTrue
+        if not assert_true:
+            assert_func = self.assertFalse
+        assert_func(any(title in entry.text for entry in entries))
+
+    def find_section_with_the_recent_edits(self):
+        return self.browser.find_element_by_id("id_recent_edits")
+
+    def check_for_edit_in_recent_section(self, title, assert_true=True):
+        section = self.find_section_with_the_recent_edits()
+        edits = section.find_elements_by_tag_name("li")
+        assert_func = self.assertTrue
+        if not assert_true:
+            assert_func = self.assertFalse
+        assert_func(any(title in edit.text for edit in edits))
+
+    def check_for_message(self, message, assert_in=True):
+        messages = self.browser.find_element_by_class_name("messages")
+        if messages:
+            messages = messages.find_elements_by_tag_name("li")
+            assert_func = self.assertIn
+            if not assert_in:
+                assert_func = self.assertNotIn
+            assert_func(message, [msg.text for msg in messages])
+        else:
+            self.fail("No messages")

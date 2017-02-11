@@ -64,17 +64,12 @@ class NewPageTest(FunctionalTest):
 
         # After filling all fields he clicks 'Publish' button.
         self.browser.find_element_by_xpath(
-            "//input[@type='submit' and @value='Publish']"
+            "//button[@type='submit' and @value='publish']"
         ).click()
 
         # After a while information appears that the article has been
         # successfuly published.
-        messages = self.browser.find_element_by_class_name("messages").\
-                        find_elements_by_tag_name("li")
-        self.assertIn(
-            "The page was updated and published successfully.",
-            [msg.text for msg in messages]
-        )
+        self.check_for_message("The analysis has been saved and published.")
 
         # Spider is very proud of himself for creating new page and clicks
         # link with 'My Astor' text to return to main page of his profile.
@@ -85,7 +80,7 @@ class NewPageTest(FunctionalTest):
         # It says: "New article published on <date>"
         acts_list = self.browser.find_element_by_id("id_list_activities")
         acts = acts_list.find_elements_by_tag_name("li")
-        self.assertTrue(any("Page updated" in act.text for act in acts))
+        self.assertTrue(any("Analysis updated" in act.text for act in acts))
 
         # Spider clicks "Log out" and close the browser.
         self.browser.find_element_by_link_text("Log Out").click()

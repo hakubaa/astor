@@ -63,8 +63,11 @@ class CreatingDraftsTest(FunctionalTest):
         # The list with types of pages appears and she select 'Content Page'
         self.browser.find_element_by_link_text("Content Page").click()
 
+        import time; time.sleep(1)
+
         # She fills the forms.
         self.wait_for_element_with_id("id_title", timeout=15)
+        page_url = self.browser.current_url
         self.fill_content_page_form(
             title = "Flies are super!",
             abstract = "The past and future of our species.",
@@ -76,17 +79,56 @@ class CreatingDraftsTest(FunctionalTest):
         # needs to check something in external source. She decides to save
         # the draft and publish it later. She clicks 'Save draft'.
         self.browser.find_element_by_xpath(
-            "//input[@type='submit' and @value='Save Draft']"
+            "//button[@type='submit' and @value='save_draft']"
         ).click()
 
         # After a while information appears that the article has been
         # successfuly saved.
-        messages = self.browser.find_element_by_class_name("messages").\
-                        find_elements_by_tag_name("li")
-        self.assertIn(
-            "The draft was saved.",
-            [msg.text for msg in messages]
-        )
+        self.check_for_message("The draft has been saved.")
 
         # She clicks "ASTOR" what redirects her to main page.
         self.browser.find_element_by_link_text("ASTOR").click()
+        self.wait_for_page_which_url_ends_with(self.live_server_url + "/")
+
+        # Fly cannot see her analysis in section with latest entries
+        self.check_for_entry_in_newest_section(
+            "Flies are super!", assert_true=False
+        )
+
+        # She decides to publish her fantastic article. Se clisk 'My Astor'
+        self.browser.find_element_by_link_text("My Astor").click()
+        self.wait_for_page_which_url_ends_with("account/")
+
+        # The page updates and she can see in section with the latest
+        # updates that she was working on page with title 'Flies are super!'
+        self.browser.find_element_by_id("id_recent_edits")
+        self.check_for_edit_in_recent_section("Flies are super!")
+
+        # She clicks the title of the entry what redirects her to page where
+        # she can edit the content.
+        self.browser.find_element_by_link_text("Flies are super!").click()
+        self.wait_for(lambda: page_url == self.browser.current_url)
+
+        # Fly updates the title
+        input_title = self.browser.find_element_by_id("id_title")
+        input_title.clear()
+        input_title.send_keys("Flies are awesome!")
+
+        # And she clicks Publish.
+        self.browser.find_element_by_xpath(
+            "//button[@type='submit' and @value='publish']"
+        ).click()
+
+        # After a while information appears that the article has been
+        # successfuly saved.
+        self.check_for_message("The analysis has been saved and published.")
+
+        # She clicks "ASTOR".
+        self.browser.find_element_by_link_text("ASTOR").click()
+        self.wait_for_page_which_url_ends_with(self.live_server_url + "/")
+
+        # She can see now that her entry is on the main page <jupi>.
+        self.check_for_entry_in_newest_section("Flies are awesome!")
+
+        # Very proud of herself, she clicks "Log Out"
+        self.browser.find_element_by_link_text("Log Out").click()

@@ -6,14 +6,6 @@ from functional_tests.base import FunctionalTest
 
 class ReadingEntriesTest(FunctionalTest):
 
-    def find_section_with_the_newest_entries(self):
-        return self.browser.find_element_by_id("id_newest_entries")
-
-    def check_for_entry_in_newest_section(self, title):
-        section = self.find_section_with_the_newest_entries()
-        entries = section.find_elements_by_tag_name("li")
-        self.assertTrue(any(title in entry.text for entry in entries))
-
     def test_can_read_entries_of_other_user(self):
         # Spider told her favourite firend Fly about the new website he had 
         # discovered and his first publication.
