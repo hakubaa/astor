@@ -1,0 +1,45 @@
+<div class="nav-wrapper">
+    <div class="inner">
+        <a href="{% url 'astormain:home' %}" class="logo" title="ASTOR">
+            ASTOR
+        </a>
+
+        <nav class="nav-main">
+            <ul>
+                <li>
+                    <a href="{% url 'astoraccount:index' %}" 
+                        class="icon icon-folder-open-inverse dl-trigger">
+                        My Astor
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'astoraccount:analyses' %}" 
+                        class="icon icon-folder-open-inverse dl-trigger">
+                        Analyses
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="icon icon-folder-open-inverse dl-trigger">
+                        Mailbox
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="icon icon-folder-open-inverse dl-trigger">
+                        Network
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="icon icon-folder-open-inverse dl-trigger">
+                        Account
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'astoraccount:logout' %}" 
+                       class="icon icon-folder-open-inverse dl-trigger">
+                        Log Out
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
