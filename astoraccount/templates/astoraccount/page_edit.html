@@ -8,43 +8,102 @@
 
 {% block styles %}
 <!-- <link rel="stylesheet" href="{% static 'astoraccount/css/page-editor.css' %}"> -->
+<style>
+.field {
+    background-color: yellow;
+}
+.field-content {
+    background-color: blue;
+}
+textarea,
+input {
+    width: 100%;
+    box-sizing : border-box;
+}
+div.django-ckeditor-widget {
+    width: 100% !important;
+    height: 100% !important;
+}
+</style>
 {% endblock %}
 
 {% block content %}
 {{ super }}
-    {% if form %}
-        <form action="" method="POST">
-            {% csrf_token %}
-            <ul>
-                {% for field in form %}
-                    <li class="object full {% if field.required %} required {% endif %} ">
-                        <h2><label for="id_title">{{field.label_tag}}</label></h2>
-                        {% if field.help_text %}
-                            <div class="object-help help">{{field.help_text}}</div>
-                        {% endif %}
-                        <fieldset>
-                            <legend>{{field.label_tag}}</legend>
-                            <ul class="fields">
-                                <li>
-                                    <div class="field">
-                                        <div class="field-content">
-                                            <div class="input">{{field}}<span></span></div>
+<div class="row">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#content" data-toggle="tab">Content</a>
+        </li>
+        <li><a href="#promote" data-toggle="tab">Promote</a>
+        </li>
+        <li><a href="#settings" data-toggle="tab">Settings</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="content">
+            {% if form %}
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="field">
+                            <label for="{{field.name}}">{{field.label_tag}}</label>
+                            <div class="field">
+                                <div class="field-content">
+                                    {{field}}
+                                </div>
+                            </div>
+                        </div>
+                     {% endfor %}
+                                            
+<!-- 
+                        <li>
+                            <h2><label for="id_title">{{field.label_tag}}</label></h2>
+                            {% if field.help_text %}
+                                <div>{{field.help_text}}</div>
+                            {% endif %}
+                            <fieldset>
+                                <legend>{{field.label_tag}}</legend>
+                                <ul class="fields">
+                                    <li>
+                                        <div class="field">
+                                            <div class="field-content">
+                                                <div class="input">{{field}}<span></span></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </fieldset>
-                    </li>
-                {% endfor %}
-            </ul>
-            <button name="action_type" value="save_draft" type="submit">Save Draft</button>
-            <button name="action_type" value="publish" type="submit">Save &amp; Publish</button>
-        </form>
-    {% endif %}
+                                    </li>
+                                </ul>
+                            </fieldset>
+                        </li> -->
+
+                    <button name="action_type" value="save_draft" type="submit">Save Draft</button>
+                    <button name="action_type" value="publish" type="submit">Save &amp; Publish</button>
+                </form>
+            {% endif %}
+        </div>
+        <div class="tab-pane fade" id="promote">
+
+        </div>
+        <div class="tab-pane fade" id="settings">
+
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts_body %}
 {{ super }}
-    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
-    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script>
+    // CKEDITOR.replace("id_body", { 
+    //   on : {
+    //     // maximize the editor on startup
+    //     'instanceReady' : function( evt ) {
+    //       evt.editor.resize("100%", $("#area").height());
+    //     }
+    //   }
+    // });
+</script>    
 {% endblock %}

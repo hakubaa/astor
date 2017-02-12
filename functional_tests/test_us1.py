@@ -59,8 +59,8 @@ class NewPageTest(FunctionalTest):
 
         # He moves to body section where he can enter the proper content of
         # his new page. 
-        inputbox_body = self.browser.find_element_by_id("id_body")
-        inputbox_body.send_keys("Testing. I will put here more later.")   
+        #inputbox_body = self.browser.find_element_by_id("id_body")
+        #inputbox_body.send_keys("Testing. I will put here more later.")   
 
         # After filling all fields he clicks 'Publish' button.
         self.browser.find_element_by_xpath(

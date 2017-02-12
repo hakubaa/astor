@@ -124,7 +124,7 @@ class IndexPage(BasePage):
     template_name = "astormain/pages/index.html"
     help_text = "Index Page. No one wants me anymore."
 
-    abstract = models.TextField(default="")    
+    abstract = models.TextField(default="", blank=True)    
 
 
 @register_page
@@ -133,5 +133,5 @@ class ContentPage(BasePage):
     template_name = "astormain/pages/content.html"
     help_text = "Provide some content and I will be hapy."
 
-    abstract = models.TextField(default="") 
-    body = models.TextField()
+    abstract = models.TextField(default="", blank=True) 
+    body = models.TextField(blank=True)

@@ -6,9 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.utils.translation import ugettext as _
-
+from django.core.paginator import Paginator
 from django.views.generic import TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.list import ListView
 
 from astorcore.models import Page
 from astorcore.decorators import get_page_models, get_forms
@@ -22,14 +23,34 @@ class AccountIndexView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(AccountIndexView, self).get_context_data(*args, **kwargs)
         # Find recent edits, but do not show published pages.
-        recent_edits = [page.specific for page in self.request.user.pages.all()
-                                      if page.specific.editable]
+        recent_edits = [page.specific for page in self.request.user.pages.all()]
         context["recent_edits"] = recent_edits
         return context
 
 
 class AnalysesView(LoginRequiredMixin, TemplateView):
     template_name = "astoraccount/analyses.html"
+
+    def get_context_data(self, *args, **kwargs):
+        page = self.request.GET.get("page", 1)
+
+        paginator = Paginator(
+            self.request.user.pages.filter(basepage__editable=True), 10
+        )
+        try:
+            analyses = paginator.page(page)
+        except PageNotAnInteger:
+            analyses = paginator.page(1)
+        except EmptyPage:
+            analyses = paginator.page(paginator.num_pages)
+
+        # Get the most specific type of page.
+        analyses.object_list = [analysis.specific for analysis in analyses]
+
+        context = super(AnalysesView, self).get_context_data(*args, **kwargs)
+        context["analyses"] = analyses
+
+        return context
 
 
 class NewPageView(LoginRequiredMixin, TemplateView):

@@ -6,15 +6,121 @@
 - Analyses
 {% endblock %}
 
+{% block styles %}
+{{ super }}
+<link rel="stylesheet" href="{% static 'astoraccount/css/core.css' %}">
+<style>
+    #analyses tbody tr th, 
+    #analyses tbody tr td {
+        padding: 10px 20px;
+    }
+
+    #analyses thead tr th {
+        padding: 10px 10px 10px 20px;
+    }
+
+    #analyses {
+        margin: 10px;
+    }
+
+    #new-analysis-btn {
+        padding: 20px;
+    }
+
+    .analysis-btns {
+        margin-top: 10px;
+    }
+
+    .table-responsive {
+        border:0px !important;
+    }
+
+    .outline {
+        background-color: transparent;
+        color: inherit;
+        transition: all .25s;
+    }
+    .btn-success.outline {
+        color: #5cb85c;
+    }
+    .btn-success.outline:hover {
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 {{ super }}
-<section>
-    <a href="{% url 'astoraccount:page_new' %}">Add New Analysis</a>
-</section>
-<section>
-Your Most Recent Edits
+    <div class="row" id="new-analysis-btn">
+        <a class="btn btn-success btn-lg outline" role="button" href="{% url 'astoraccount:page_new' %}">
+            Add New Analysis
+        </a>
+    </div>
+    {% if analyses %}
+    <div class="row">
+        <div class="table-responsive" id="analyses">
+            <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Updated</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analysis in analyses %}
+                    <tr class="analysis">
+                        <td>
+                            <div class="analysis-title">
+                                {{analysis.title}}
+                            </div>
+                            <div class="analysis-btns">
+                                <a class="btn btn-default btn-xs outline" role="button" 
+                                   href="{% url 'astoraccount:page_edit' analysis.id %}">Edit</a>
+                                <a class="btn btn-default btn-xs outline" role="button" href="#">Remove</a>
+                            </div>
+                        </td>
+                        <td>{{analysis.latest_changes_date|date:'Y-m-d'}}</td>
+                        <td>{{analysis.content_type.name.title}}</td>
+                        <td>
+                            {% if analysis.published_page %}
+                                <a class="btn btn-default btn-xs outline" role="button" 
+                                   href="{{ analysis.get_absolute_url }}" target="_blank">LIVE</a>
+                            {% else %}
+                                <a class="btn btn-default btn-xs disabled outline" 
+                                   role="button" href="#">DRAFT</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% if analyses.has_other_pages %}
+            <ul class="pagination">
+            {% if analyses.has_previous %}
+                <li><a href="?page={{ analyses.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+            {% endif %}
+            {% for i in analyses.paginator.page_range %}
+                {% if analyses.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if analyses.has_next %}
+                <li><a href="?page={{ analyses.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
 
-</section>
 {% endblock %}
 
 

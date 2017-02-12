@@ -13,8 +13,9 @@ class CreatingDraftsTest(FunctionalTest):
         inputbox_title.send_keys(title)
         inputbox_abstract = self.browser.find_element_by_id("id_abstract")
         inputbox_abstract.send_keys(abstract)
-        inputbox_body = self.browser.find_element_by_id("id_body")
-        inputbox_body.send_keys(body) 
+        if body:
+            inputbox_body = self.browser.find_element_by_id("id_body")
+            inputbox_body.send_keys(body) 
 
 
     def test_create_and_edit_drafts(self):
@@ -70,9 +71,9 @@ class CreatingDraftsTest(FunctionalTest):
         page_url = self.browser.current_url
         self.fill_content_page_form(
             title = "Flies are super!",
-            abstract = "The past and future of our species.",
-            body = "If not for spiders, flies would dominated the universe "
-                   "a long time ago."
+            abstract = "The past and future of our species."
+            #body = "If not for spiders, flies would dominated the universe "
+            #       "a long time ago."
         )
   
         # She wants to publish her entry but she has still some doubts and

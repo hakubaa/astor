@@ -1,4 +1,6 @@
 import unittest
+import random
+import string
 
 from django.test import TestCase
 from django.urls import resolve, reverse
@@ -171,7 +173,36 @@ class AuthViewsTest(AstorTestCase):
 
 class AnalysesPageTest(AstorTestCase):
 
+    def generate_pages_for_user(self, user, n=10):
+        titles = [ ''.join(random.choice(string.ascii_uppercase + 
+                                         string.digits) for _ in range(20))
+                   for _ in range(n) ]
+        pages = [ user.add_page(instance=ContentPage(title=title)) 
+                  for title in titles ]
+        return pages
+
     def test_renders_correct_template(self):
         user = self.create_and_login_user()
         response = self.client.get(reverse("astoraccount:analyses")) 
         self.assertTemplateUsed(response, "astoraccount/analyses.html")
+
+    def test_for_passing_analyses_to_template(self):
+        user = self.create_and_login_user()
+        pages = self.generate_pages_for_user(user, 5)
+        response = self.client.get(reverse("astoraccount:analyses"))
+        self.assertEqual(len(response.context["analyses"]), len(pages))
+        self.assertTrue(all(page in response.context["analyses"] for page in pages))
+
+    def test_renders_titles_of_analyses(self):
+        user = self.create_and_login_user()
+        pages = self.generate_pages_for_user(user, 7)
+        response = self.client.get(reverse("astoraccount:analyses"))
+        content = response.content.decode("utf-8")
+        self.assertTrue(all(page.specific.title in content for page in pages))
+
+    def test_renders_only_10_analyses(self):
+        user = self.create_and_login_user()
+        pages = self.generate_pages_for_user(user, 20)
+        response = self.client.get(reverse("astoraccount:analyses"))
+        content = response.content.decode("utf-8")
+        self.assertEqual(len(response.context["analyses"]), 10)

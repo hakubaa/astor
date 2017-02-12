@@ -3,43 +3,7 @@
 
 {% block styles %}
 {{ super }}
-<style>
-    ul.edits {
-        list-style-type: none;
-        padding: 0px;
-        margin: 16px 0px 0px 0px;
-        border-top: 1px solid #333;
-    }
-    ul.edits li.edit {
-        padding: 8px;
-        border-bottom: 1px solid #333;
-        cursor: pointer;
-    }
-    li.edit:hover {
-        background-color: #bcaaa4;
-    }
-    div.edit-date {
-        float: right;
-    }
-    div.edit-title {
-        font-size: 1.2em;
-        font-weight: bold;
-    }
-    div.edit-thumbnail {
-        position: absolute;
-    }
-    div.edit-content {
-        min-height: 48px;
-    }
-    div.edit-body {
-        padding: 10px 0px 0px 0px;
-    }
-    div.edit-tags {
-        font-size: small;
-        color: navy;
-        font-style: italic;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'astoraccount/css/core.css' %}">
 {% endblock %}
 
 {% block content_premsg %}

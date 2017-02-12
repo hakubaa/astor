@@ -139,19 +139,19 @@ LOGIN_REDIRECT_URL = "astoraccount:index"
 
 CKEDITOR_CONFIGS = {
     'default': {
-        'skin': 'office2013',
+        # 'skin': 'bootstrapck',
         # 'skin': 'office2013',
         'toolbar_Basic': [
             ['Source', '-', 'Bold', 'Italic', 'CodeSnippet']
         ],
-        'toolbar_YourCustomToolbarConfig': [
+        'toolbar_BodyToolbar': [
             {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 
                                            'Preview', 'Print', '-', 'Templates']},
             {'name': 'clipboard', 
              'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', 
                        '-', 'Undo', 'Redo']},
             {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
-            '/',
+            #'/',
             {'name': 'basicstyles',
              'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 
                        'Superscript', '-', 'RemoveFormat']},
@@ -159,7 +159,7 @@ CKEDITOR_CONFIGS = {
              'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 
                        'SpecialChar', 'PageBreak', 'Iframe', 'CodeSnippet',
                        'CodeSnippetGeshi']},
-            '/',
+            #'/',
             {'name': 'paragraph',
              'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 
                        '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 
@@ -168,15 +168,12 @@ CKEDITOR_CONFIGS = {
                        'Language']},
             {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
 
-            '/',
+            #'/',
             {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
             {'name': 'colors', 'items': ['TextColor', 'BGColor']},
             {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']}
         ],
-        'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here
-        # 'toolbarGroups': [{ 'name': 'document', 'groups': [ 'mode', 'document', 'doctools' ] }],
-        # 'filebrowserWindowHeight': 725,
-        # 'filebrowserWindowWidth': 940,
+        'toolbar': 'BodyToolbar',  # put selected toolbar config here
         'toolbarCanCollapse': True,
         # 'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
         'tabSpaces': 4,
@@ -184,7 +181,7 @@ CKEDITOR_CONFIGS = {
         'extraPlugins': ','.join(
             [
                 # your extra plugins here
-                # 'div',
+                'div',
                 'autolink',
                 'autoembed',
                 'embedsemantic',
@@ -197,6 +194,14 @@ CKEDITOR_CONFIGS = {
                 'dialogui',
                 'elementspath',
                 'codesnippet'
-            ])
+            ]),
+        'height': '100%',
+        'width': '100%'
     }
+}
+
+from django.contrib import messages
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
 }
