@@ -7,11 +7,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 
-from django.db.models.deletion import Collector
-from django.db.models.fields.related import ForeignKey
-
 from astorcore.decorators import register_page
-
 from astorcore.utils import clone_page
 
 
@@ -126,6 +122,7 @@ class BasePage(Page):
 class IndexPage(BasePage):
     verbose_name = "index page"
     template_name = "astormain/pages/index.html"
+    help_text = "Index Page. No one wants me anymore."
 
     abstract = models.TextField(default="")    
 
@@ -134,6 +131,7 @@ class IndexPage(BasePage):
 class ContentPage(BasePage):
     verbose_name = "content page"
     template_name = "astormain/pages/content.html"
+    help_text = "Provide some content and I will be hapy."
 
     abstract = models.TextField(default="") 
     body = models.TextField()

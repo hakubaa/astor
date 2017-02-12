@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'astorcore',
     'astormain',
     'astoraccount',
-    'astor4tests',
+    'ckeditor',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -135,3 +135,68 @@ AUTH_USER_MODEL = "astoraccount.User"
 
 
 LOGIN_REDIRECT_URL = "astoraccount:index"
+
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'skin': 'office2013',
+        # 'skin': 'office2013',
+        'toolbar_Basic': [
+            ['Source', '-', 'Bold', 'Italic', 'CodeSnippet']
+        ],
+        'toolbar_YourCustomToolbarConfig': [
+            {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 
+                                           'Preview', 'Print', '-', 'Templates']},
+            {'name': 'clipboard', 
+             'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', 
+                       '-', 'Undo', 'Redo']},
+            {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
+            '/',
+            {'name': 'basicstyles',
+             'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 
+                       'Superscript', '-', 'RemoveFormat']},
+            {'name': 'insert',
+             'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 
+                       'SpecialChar', 'PageBreak', 'Iframe', 'CodeSnippet',
+                       'CodeSnippetGeshi']},
+            '/',
+            {'name': 'paragraph',
+             'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 
+                       '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 
+                       'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 
+                       'BidiLtr', 'BidiRtl',
+                       'Language']},
+            {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
+
+            '/',
+            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
+            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+            {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']}
+        ],
+        'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here
+        # 'toolbarGroups': [{ 'name': 'document', 'groups': [ 'mode', 'document', 'doctools' ] }],
+        # 'filebrowserWindowHeight': 725,
+        # 'filebrowserWindowWidth': 940,
+        'toolbarCanCollapse': True,
+        # 'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
+        'tabSpaces': 4,
+        'removePlugins': 'stylesheetparser',
+        'extraPlugins': ','.join(
+            [
+                # your extra plugins here
+                # 'div',
+                'autolink',
+                'autoembed',
+                'embedsemantic',
+                'autogrow',
+                # 'devtools',
+                'widget',
+                'lineutils',
+                'clipboard',
+                'dialog',
+                'dialogui',
+                'elementspath',
+                'codesnippet'
+            ])
+    }
+}

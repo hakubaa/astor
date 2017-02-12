@@ -1,50 +1,45 @@
 {% load static %}
 
 <!DOCTYPE html>
-    <head>
-        <title>ASTOR - Account{% block title %}{% endblock %}</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <!-- <link rel="stylesheet/less" href="{% static 'bootstrap/less/bootstrap.less' %}"> -->
-        <!-- <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}"> -->
-        <link rel="stylesheet" href="{% static 'astoraccount/css/normalize.css' %}">
-        <link rel="stylesheet" href="{% static 'astoraccount/css/core_backup.css' %}">
-        {% block styles %}{% endblock %}
-        <script src="{% static 'js/less.min.js' %}"></script>
-        {% block scripts %}{% endblock %}
-    </head>
-    <body>
-        <div class="wrapper">
-            {% include 'astoraccount/sidebar.html' %}
-            <div class="content-wrapper">  
-                <div class="content">
-                    <div id="nav-toggle" class="nav-toggle icon text-replace">Menu</div>
-                    <header class="merged nice-padding">
-                        <div>
-                            <div>
-                                <h1>Your Personal Analyses Storage (ASTOR)</h1>
-                                <h2>{{user.username}}</h2>
-                            </div>
-                        </div>
-                    </header>
-                    <section>
-                        {% if messages %}
-                        <ul class="messages">
-                            {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                                {{ message }}
-                            </li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </section>
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
-        </div>
+<html>
 
-        <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
-        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-        {% block scripts_body %}{% endblock %}
-    </body>
+<head>
+    <title>ASTOR - Account{% block title %}{% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="{% static 'vendors/normalize.css' %}">
+    <link href="{% static 'vendors/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/metisMenu/metisMenu.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/sb-admin/css/sb-admin-2.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    {% block styles %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</head>
+<body>
+    <div id="wrapper">
+        {% include 'astoraccount/navbar.html' %}
+        <div id="page-wrapper">
+            {% block content_premsg %}{% endblock %}
+            {% include 'astoraccount/panels/messages.html' %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="{% static 'vendors/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'vendors/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendors/metisMenu/metisMenu.min.js' %}"></script>
+    <script src="{% static 'vendors/sb-admin/js/sb-admin-2.js' %}"></script>
+
+    {% block scripts_body %}{% endblock %}
+</body>
+
 </html>

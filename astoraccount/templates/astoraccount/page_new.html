@@ -7,10 +7,39 @@
 
 {% block content %}
 {{ super }}
-    <p>Choose which type of page you'd like to create.</p>
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="page-header">Select Type of Analysis</h2>
+        </div>
+    </div>
+
+    <div class="row">
     {% for page in pages %}
-        <a href="{% url 'astoraccount:page_create' %}?type={{page.type}}">
-            {{ page.title }}
-        </a><br/>
+
+        {% if forloop.counter|divisibleby:3 and forloop.counter > 0%}
+            </div>
+            <div class="row">
+        {% endif %}
+
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{page.title}}</div>
+                <div class="panel-body">
+                    {% if page.help_text %}
+                        {{page.help_text}}
+                    {% else %}
+                        No description. {{page.help_text}}
+                    {% endif %}
+                </div>
+                <div class="panel-footer">
+                    Create 
+                    <a href="{% url 'astoraccount:page_create' %}?type={{page.type}}">
+                        {{ page.title }}
+                    </a>
+                </div>
+            </div>
+        </div>
     {% endfor %}
+    </div>
+
 {% endblock %}

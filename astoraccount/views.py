@@ -43,7 +43,8 @@ class NewPageView(LoginRequiredMixin, TemplateView):
             content_type = ContentType.objects.get_for_model(page)    
             pages.append({
                 "title": page.verbose_name.title(), 
-                "type": content_type.app_label + ":" + content_type.model
+                "type": content_type.app_label + ":" + content_type.model,
+                "help_text": page.help_text
             })
         context["pages"] = pages
 

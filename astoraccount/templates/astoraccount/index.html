@@ -1,34 +1,113 @@
 {% extends "astoraccount/base.html" %}
 {% load static %}
 
+{% block styles %}
+{{ super }}
+<style>
+    ul.edits {
+        list-style-type: none;
+        padding: 0px;
+        margin: 16px 0px 0px 0px;
+        border-top: 1px solid #333;
+    }
+    ul.edits li.edit {
+        padding: 8px;
+        border-bottom: 1px solid #333;
+        cursor: pointer;
+    }
+    li.edit:hover {
+        background-color: #bcaaa4;
+    }
+    div.edit-date {
+        float: right;
+    }
+    div.edit-title {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    div.edit-thumbnail {
+        position: absolute;
+    }
+    div.edit-content {
+        min-height: 48px;
+    }
+    div.edit-body {
+        padding: 10px 0px 0px 0px;
+    }
+    div.edit-tags {
+        font-size: small;
+        color: navy;
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block content_premsg %}
+{{ super }}
+    <div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">Dashboard</h3>
+        </div>
+    </div>
+{% endblock %}
+
 {% block content %}
 {{ super }}
-<section>
-    {% if not recent_edits %}
-        <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
-    {% else %}
-        Your Recent Edits
-        <ul id="id_recent_edits">
-            {% for page in recent_edits %}
-                <li><a href="{% url 'astoraccount:page_edit' page.id %}">
-                    {{ page.title }}
-                </a></li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-</section>
-<section>
-    Your Recent Activities
-    {% if user.activities.count > 0 %}
-        <ul id="id_list_activities">
-        {% for activity in user.activities.all %}
-            <li>{{activity.message}} on {{activity.timestamp|date:'Y-m-d H:i'}}</li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        No Activities.
-    {% endif %}
-</section>
+
+    <div class="row">
+        {% include 'astoraccount/panels/primary.html' %}
+    </div>
+
+    <div class="row">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Recent Edits
+            </div>
+            <div class="panel-body">
+                 {% if not recent_edits %}
+                    <a href="{% url 'astoraccount:page_new' %}">Create Your First Page</a>
+                {% else %}
+                    <ul id="id_recent_edits" class="edits">
+                        {% for page in recent_edits %}
+                        <li class="edit">
+                                <div class="edit-content">
+                                    <div class="edit-date">
+                                        Date
+                                    </div>
+                                    <div class="edit-title">
+                                        <a href="{% url 'astoraccount:page_edit' page.id %}">{{page.title}}</a>
+                                    </div>
+                                    <div class="edit-footer"></div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <i class="fa fa-history" aria-hidden="true"></i> Recent Activities
+            </div>
+            <div class="panel-body list-group" id="id_list_activities">
+                {% if user.activities.count > 0 %}
+                    {# <ul id="id_list_activities" class="list-group"> #}
+                    {% for activity in user.activities.all %}
+                        <div class="list-group-item">
+                            {{activity.message}} on {{activity.timestamp|date:'Y-m-d H:i'}}
+                        </div>
+                    {% endfor %}
+                    {# </ul> #}
+                {% else %}
+                    No Activities.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 

@@ -1,8 +1,13 @@
 {% extends "astoraccount/base.html" %}
+{% load static %}
 
 {% block title %}
 {{ super }}
 - Edit Page
+{% endblock %}
+
+{% block styles %}
+<!-- <link rel="stylesheet" href="{% static 'astoraccount/css/page-editor.css' %}"> -->
 {% endblock %}
 
 {% block content %}
@@ -10,11 +15,36 @@
     {% if form %}
         <form action="" method="POST">
             {% csrf_token %}
-            <table>
-            {{ form.as_table }}
-            </table>
+            <ul>
+                {% for field in form %}
+                    <li class="object full {% if field.required %} required {% endif %} ">
+                        <h2><label for="id_title">{{field.label_tag}}</label></h2>
+                        {% if field.help_text %}
+                            <div class="object-help help">{{field.help_text}}</div>
+                        {% endif %}
+                        <fieldset>
+                            <legend>{{field.label_tag}}</legend>
+                            <ul class="fields">
+                                <li>
+                                    <div class="field">
+                                        <div class="field-content">
+                                            <div class="input">{{field}}<span></span></div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </fieldset>
+                    </li>
+                {% endfor %}
+            </ul>
             <button name="action_type" value="save_draft" type="submit">Save Draft</button>
             <button name="action_type" value="publish" type="submit">Save &amp; Publish</button>
         </form>
     {% endif %}
+{% endblock %}
+
+{% block scripts_body %}
+{{ super }}
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
 {% endblock %}

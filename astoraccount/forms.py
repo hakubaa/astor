@@ -1,6 +1,8 @@
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 
+from ckeditor.widgets import CKEditorWidget
+
 from astorcore.models import IndexPage, ContentPage
 from astorcore.decorators import register_form
 
@@ -21,4 +23,5 @@ class ContentPageForm(IndexPageForm):
         fields = IndexPageForm.Meta.fields + ["body"]
         widgets = {
             "title": TextInput(attrs={"placeholder": "Enter a title."}),
+            "body": CKEditorWidget()
         }
