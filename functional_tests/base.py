@@ -70,11 +70,11 @@ class FunctionalTest(StaticLiveServerTestCase):
         input_password.send_keys(password)
 
         self.browser.find_element_by_xpath(
-            "//input[@type='submit' and @value='Submit']"
+            "//button[@type='submit' and @value='Login']"
         ).click()
 
         WebDriverWait(self.browser, timeout = 10).until(
-            lambda b: b.find_element_by_link_text("Log Out"),
+            lambda b: b.find_element_by_link_text("Logout"),
             "Could not find 'Log Out' link"
         )
 

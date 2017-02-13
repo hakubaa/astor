@@ -2,7 +2,9 @@
 
 {% block content %}
 {{ super }}
-<h3 id="id_page_title">{{ page.title }}</h3>
-<p id="id_page_abstract">{{ page.abstract }}</p>
-<p id="id_page_body">{{ page.body }}</p>
+    <div class="row">
+        <h3 id="id_title">{{ page.title }}</h3>
+        <p id="id_abstract">{{ page.abstract }}</p>
+        <p id="id_body">{{ page.body }}</p>
+    </div>
 {% endblock %}

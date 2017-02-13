@@ -204,5 +204,12 @@ class AnalysesPageTest(AstorTestCase):
         user = self.create_and_login_user()
         pages = self.generate_pages_for_user(user, 20)
         response = self.client.get(reverse("astoraccount:analyses"))
-        content = response.content.decode("utf-8")
         self.assertEqual(len(response.context["analyses"]), 10)
+
+    def test_do_not_show_published_analyses(self):
+        user = self.create_and_login_user()
+        pages = self.generate_pages_for_user(user, 2)
+        for page in pages:
+            page.publish()
+        response = self.client.get(reverse("astoraccount:analyses"))
+        self.assertEqual(len(response.context["analyses"]), 2)
