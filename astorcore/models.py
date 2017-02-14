@@ -7,6 +7,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 
+from taggit.managers import TaggableManager
+
 from astorcore.decorators import register_page
 from astorcore.utils import clone_page
 
@@ -67,6 +69,8 @@ class BasePage(Page):
         blank=True, null=True,
         on_delete=models.SET_NULL
     )
+
+    tags = TaggableManager(blank=True)
 
     # Distinction between drafts and published pages
     editable = models.BooleanField(default=True, editable=False)

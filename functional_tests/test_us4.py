@@ -1,5 +1,6 @@
 from django.urls import reverse
 from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
 
 from astorcore.models import ContentPage
 
@@ -9,6 +10,10 @@ from functional_tests.base import FunctionalTest, User
 
 class AddTagsTest(FunctionalTest):
 
+    # def setUp(self):
+    #     self.browser = webdriver.Chrome()
+    #     self.browser.implicitly_wait(3)
+
     def find_analysis_with_title(self, title):
         analyses = self.browser.find_elements_by_class_name("analysis")
         for analysis in analyses:
@@ -17,6 +22,15 @@ class AddTagsTest(FunctionalTest):
                 return analysis
         return None
 
+    def assert_tags(self, tags):
+        tags_live = self.find_tags()
+        tags_live = [ tag.text for tag in tags_live ]
+        self.assertTrue(all(tag in tags_live for tag in tags))
+
+    def find_tags(self):
+        tags_container = self.browser.find_element_by_id("id_tags")
+        tags = tags_container.find_elements_by_tag_name("li")
+        return tags
 
     def test_can_add_tags(self):
         # Fly has just been told by Spider that she can add tags to her analyses 
@@ -77,6 +91,7 @@ class AddTagsTest(FunctionalTest):
         analysis_url = self.browser.current_url
 
         # She closes the window and goes back to her account page.
+        self.browser.close()
         self.browser.switch_to_window(window_account)
 
         # Time to add some tags. Fly clicks edit button below the title of 
@@ -93,6 +108,12 @@ class AddTagsTest(FunctionalTest):
         # Fly spots input box for tags. There she has to put tags she 
         # wants to ascribe to this analysis.
         inputbox_tags = self.browser.find_element_by_id("id_tags")
+
+        ## Make input box visible (otherwise error: Element is not visible)
+        self.browser.execute_script(
+            "document.getElementById('id_tags').style.display='inline';"
+        )
+        import time; time.sleep(1)
 
         # She enters names of three tags.
         inputbox_tags.send_keys("flies, spiders, flying")
@@ -113,13 +134,9 @@ class AddTagsTest(FunctionalTest):
         self.wait_for_page_with_text_in_url("da/fly")
 
         # Now she can see below the title three words.
-        tags = self.find_elements_with_class_name("analysis_tag")
-        self.assetEqual(len(tags), 3)
+        tags = self.find_tags()
+        self.assertEqual(len(tags), 3)
         self.assert_tags(["flies", "spiders", "flying"])
 
-        # , that my tags. Content with herself she closes the browser.  
+        # That my tags. Content with herself she closes the browser.  
 
-        def assert_tags(self, tags):
-            tags_live = self.browser.find_elements_by_class_name("analysis_tag")
-            tags_live = [ tag.text for tag in tags.live ]
-            self.assertTrue(all(tag in tags_live for tag in tags))

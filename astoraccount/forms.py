@@ -20,8 +20,9 @@ class IndexPageForm(ModelForm):
 class ContentPageForm(IndexPageForm):
     class Meta:
         model = ContentPage
-        fields = IndexPageForm.Meta.fields + ["body"]
+        fields = IndexPageForm.Meta.fields + ["body", "tags"]
         widgets = {
             "title": TextInput(attrs={"placeholder": "Enter a title."}),
-            "body": CKEditorWidget()
+            "body": CKEditorWidget(),
+            "tags": TextInput(attrs={"data-role": "tagsinput" }),
         }

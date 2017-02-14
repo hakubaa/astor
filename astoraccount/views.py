@@ -11,6 +11,8 @@ from django.views.generic import TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
 
+from taggit.utils import edit_string_for_tags
+
 from astorcore.models import Page
 from astorcore.decorators import get_page_models, get_forms
 from astoraccount.models import Activity
@@ -106,8 +108,14 @@ def page_edit(request, pk):
             break
 
     form = None
+    form_data = dict(
+        instance=page.specific,
+        initial={
+            "tags": edit_string_for_tags(page.specific.tags.all())
+        }
+    )
     if request.method == "POST":
-        form = form_cls(request.POST, instance=page.specific)
+        form = form_cls(request.POST, **form_data)
         if form.is_valid:
             page = form.save()
 
@@ -141,6 +149,6 @@ def page_edit(request, pk):
 
     else:
         if form_cls:
-            form = form_cls(instance=page.specific)
+            form = form_cls(**form_data)
 
     return render(request, "astoraccount/page_edit.html", {"form": form})

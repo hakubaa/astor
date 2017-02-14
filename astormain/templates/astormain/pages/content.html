@@ -4,6 +4,13 @@
 {{ super }}
     <div class="row">
         <h3 id="id_title">{{ page.title }}</h3>
+        {% if page.tags %}
+            <ul id="id_tags">
+                {% for tag in page.tags.all %}
+                    <li>{{tag.name}}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         <p id="id_abstract">{{ page.abstract }}</p>
         <p id="id_body">{{ page.body }}</p>
     </div>

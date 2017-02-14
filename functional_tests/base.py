@@ -73,16 +73,18 @@ class FunctionalTest(StaticLiveServerTestCase):
             "//button[@type='submit' and @value='Login']"
         ).click()
 
-        WebDriverWait(self.browser, timeout = 10).until(
-            lambda b: b.find_element_by_link_text("Logout"),
-            "Could not find 'Log Out' link"
-        )
+        self.wait_for_page_which_url_ends_with("/account/")
 
-        if test_for_login:
-            self.assertEqual(
-                self.browser.current_url, 
-                self.live_server_url + "/account/"
-            )
+        # WebDriverWait(self.browser, timeout = 10).until(
+        #     lambda b: b.find_element_by_link_text("Logout"),
+        #     "Could not find 'Log Out' link"
+        # )
+
+        # if test_for_login:
+        #     self.assertEqual(
+        #         self.browser.current_url, 
+        #         self.live_server_url + "/account/"
+        #     )
 
     def find_section_with_the_newest_entries(self):
         return self.browser.find_element_by_id("id_newest_entries")
@@ -109,10 +111,10 @@ class FunctionalTest(StaticLiveServerTestCase):
     def check_for_message(self, message, assert_in=True):
         messages = self.browser.find_element_by_class_name("messages")
         if messages:
-            messages = messages.find_elements_by_tag_name("li")
-            assert_func = self.assertIn
+            messages = messages.find_elements_by_tag_name("div")
+            assert_func = self.assertTrue
             if not assert_in:
-                assert_func = self.assertNotIn
-            assert_func(message, [msg.text for msg in messages])
+                assert_func = self.assertFalse
+            assert_func(any([message in msg.text for msg in messages]))
         else:
             self.fail("No messages")

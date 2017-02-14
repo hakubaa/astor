@@ -159,6 +159,18 @@ class PageEditTest(AstorTestCase):
         page.refresh_from_db()
         self.assertIsNotNone(page.published_page)
 
+    def test_use_tags_names_when_populating_form(self):
+        user = self.create_and_login_user()
+        page = user.add_page(instance=ContentPage(title="It's time!!!"))
+        page.tags.add("one", "two", "three")
+        response =  self.client.get(
+            reverse("astoraccount:page_edit", kwargs={"pk": page.pk})
+        ) 
+        self.assertCountEqual(
+            response.context["form"]["tags"].value(),
+            ["one", "two", "three"]
+        )
+
 
 class AuthViewsTest(AstorTestCase):
 

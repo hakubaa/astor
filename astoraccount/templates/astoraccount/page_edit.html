@@ -8,22 +8,26 @@
 
 {% block styles %}
 <!-- <link rel="stylesheet" href="{% static 'astoraccount/css/page-editor.css' %}"> -->
+<link rel="stylesheet" href="{% static 'vendors/tagsinput/bootstrap-tagsinput.css' %}">
 <style>
-.field {
-    background-color: yellow;
-}
-.field-content {
-    background-color: blue;
-}
-textarea,
-input {
-    width: 100%;
-    box-sizing : border-box;
-}
-div.django-ckeditor-widget {
-    width: 100% !important;
-    height: 100% !important;
-}
+    .field {
+        background-color: yellow;
+    }
+    .field-content {
+        background-color: blue;
+    }
+    textarea,
+    input {
+        width: 100%;
+        box-sizing : border-box;
+    }
+    div.django-ckeditor-widget {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    .bootstrap-tagsinput {
+        width: 100%;
+    }
 </style>
 {% endblock %}
 
@@ -39,14 +43,14 @@ div.django-ckeditor-widget {
         <li><a href="#settings" data-toggle="tab">Settings</a>
         </li>
     </ul>
-
     <!-- Tab panes -->
-    <div class="tab-content">
-        <div class="tab-pane fade in active" id="content">
-            {% if form %}
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    {% for field in form %}
+
+    <form action="" method="POST">  
+        {% csrf_token %}
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="content">
+                {% for field in form %}
+                    {% if field.name != 'tags' %}
                         <div class="field">
                             <label for="{{field.name}}">{{field.label_tag}}</label>
                             <div class="field">
@@ -55,40 +59,31 @@ div.django-ckeditor-widget {
                                 </div>
                             </div>
                         </div>
-                     {% endfor %}
-                                            
-<!-- 
-                        <li>
-                            <h2><label for="id_title">{{field.label_tag}}</label></h2>
-                            {% if field.help_text %}
-                                <div>{{field.help_text}}</div>
-                            {% endif %}
-                            <fieldset>
-                                <legend>{{field.label_tag}}</legend>
-                                <ul class="fields">
-                                    <li>
-                                        <div class="field">
-                                            <div class="field-content">
-                                                <div class="input">{{field}}<span></span></div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </fieldset>
-                        </li> -->
+                    {% endif %}
+                 {% endfor %}
+            </div>
+            <div class="tab-pane fade" id="promote">
+                {% if "tags" in form.fields %}
+                    <div class="field">
+                        <label for="{{ form.tags.id_for_label }}">
+                            {{ form.tags.label_tag }}
+                        </label>
+                        <div class="field">
+                            <div class="field-content">
+                                {{ form.tags }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="settings">
 
-                    <button name="action_type" value="save_draft" type="submit">Save Draft</button>
-                    <button name="action_type" value="publish" type="submit">Save &amp; Publish</button>
-                </form>
-            {% endif %}
+            </div>
         </div>
-        <div class="tab-pane fade" id="promote">
+        <button name="action_type" value="save_draft" type="submit">Save Draft</button>
+        <button name="action_type" value="publish" type="submit">Save &amp; Publish</button>
+    </form>
 
-        </div>
-        <div class="tab-pane fade" id="settings">
-
-        </div>
-    </div>
 </div>
 {% endblock %}
 
@@ -96,14 +91,15 @@ div.django-ckeditor-widget {
 {{ super }}
 <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
 <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendors/tagsinput/bootstrap-tagsinput.min.js' %}"></script>
 <script>
-    // CKEDITOR.replace("id_body", { 
-    //   on : {
-    //     // maximize the editor on startup
-    //     'instanceReady' : function( evt ) {
-    //       evt.editor.resize("100%", $("#area").height());
-    //     }
-    //   }
-    // });
-</script>    
+    // Do not send form on Enter.
+    $("form").on("keyup keypress", function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) { 
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
 {% endblock %}

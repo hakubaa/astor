@@ -108,6 +108,15 @@ class BasePageTest(TestCase):
     def test_publish_users_page(self):
         user = User.objects.create_user(username="Test", password="test")
         page1 = user.add_page(instance=ContentPage(title="My First Entry"))
-        page2 = user.add_page(instance=ContentPage(title="FUCK"))
+        page2 = user.add_page(instance=ContentPage(title="F**K"))
         pub_page = page2.publish()
         self.assertEqual(BasePage.objects.count(), 3)
+
+    def test_can_add_tags_to_page(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = user.add_page(ContentPage(title="My First Entry"))
+        page.tags.add("entry", "intro", "astor")
+        page = Page.objects.first().specific
+        self.assertEqual(page.tags.count(), 3)
+        tags = [ tag.name for tag in page.tags.all() ]
+        self.assertCountEqual(tags, ["entry", "intro", "astor"])
