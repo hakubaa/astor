@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from astorcore.models import IndexPage, ContentPage, BasePage, Page
+from astorcore.models import IndexPage, ContentPage, BasePage, Page, Comment
 
 
 User = get_user_model()
@@ -120,3 +120,36 @@ class BasePageTest(TestCase):
         self.assertEqual(page.tags.count(), 3)
         tags = [ tag.name for tag in page.tags.all() ]
         self.assertCountEqual(tags, ["entry", "intro", "astor"])
+
+    def test_for_adding_comment_to_page(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = user.add_page(ContentPage(title="My First Entry"))
+        comment = page.add_comment(body="Very nice entry.")
+        page.refresh_from_db()
+        self.assertEqual(page.comments.count(), 1)
+        self.assertEqual(page.comments.all()[0].body, comment.body)
+
+    def test_add_comment_accepts_instance(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = user.add_page(ContentPage(title="My First Entry"))
+        comment = Comment.objects.create(body="Very nice entry.", author=user)
+        page.add_comment(comment)
+        page.refresh_from_db()
+        self.assertEqual(page.comments.count(), 1)
+        self.assertEqual(page.comments.all()[0].body, comment.body)
+
+
+class CommentTest(TestCase):
+
+    def create_user_and_page(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = user.add_page(ContentPage(title="My First Entry"))   
+        return user, page  
+
+    def test_for_replying_to_comment(self):
+        user, page = self.create_user_and_page()
+        comment = page.add_comment(body="Comment #1")
+        reply = comment.reply(body="Comment #2")
+        self.assertEqual(Comment.objects.count(), 2)
+        self.assertEqual(reply.parent, comment)
+        self.assertIn(reply, comment.replies.all())

@@ -33,9 +33,11 @@ class AddTagsTest(FunctionalTest):
         return tags
 
     def test_can_add_tags(self):
-        # Fly has just been told by Spider that she can add tags to her analyses 
-        # what enable to group them and make them easier searchable.
-
+        '''
+        Fly has just been told by Spider that she can add tags to her analyses 
+        what enable to group them and make them easier searchable.
+        '''
+        
         user = User.objects.create_user(username="Fly", password="fly1234")
         data = dict(
             title="Flies are awesome!", 
@@ -138,5 +140,4 @@ class AddTagsTest(FunctionalTest):
         self.assertEqual(len(tags), 3)
         self.assert_tags(["flies", "spiders", "flying"])
 
-        # That my tags. Content with herself she closes the browser.  
-
+        # That my tags. Content with herself she closes the browser.

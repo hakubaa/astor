@@ -1,4 +1,4 @@
-<div class="navbar navbar-inverse" role="navigation">
+<div class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle"
@@ -13,10 +13,11 @@
 
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav" id="mainNavbar">
+                <li><a href="#">BROWSE</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'astoraccount:index' %}">My Astor</a></li>
+                    <li><a href="{% url 'astoraccount:index' %}">MyASTOR</a></li>
                 {% else %}
-                    <li><a href="{% url 'astoraccount:login' %}">My Astor</a></li>
+                    <li><a href="{% url 'astoraccount:login' %}">MyASTOR</a></li>
                 {% endif %}
             </ul>
 

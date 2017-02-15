@@ -113,13 +113,64 @@ class BasePage(Page):
 
         return pub_page
 
-
     def unpublish(self):
         '''Unpublish the page.'''
         if self.published_page:
             self.published_page.delete()
             self.published_page = None
             self.save()
+
+    def add_comment(self, comment=None, **kwargs):
+        '''Add comment to the page.'''
+        if comment:
+            if not isinstance(comment, Comment):
+                raise TypeError("comment must be a Commend type")
+            if not comment.pk:
+                comment.save()
+        else:
+            comment = Comment(**kwargs)
+            comment.save()
+
+        self.comments.add(comment)
+
+        return comment
+
+
+class Comment(models.Model):
+    verbose_name = "comment"
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, blank=True, null=True,
+        related_name="comments"           
+    )
+    page = models.ForeignKey(
+        BasePage, on_delete=models.CASCADE, blank=True, null=True, 
+        related_name="comments"
+    )
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, blank=True, null=True,
+        related_name="replies"
+    )
+
+    body = models.TextField()
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def reply(self, comment=None, **kwargs):
+        '''Reply to the commend.'''
+        if comment:
+            if not isinstance(comment, Comment):
+                raise TypeError("comment must be a Commend type")
+            if not comment.pk:
+                comment.save()
+        else:
+            comment = Comment(**kwargs)
+            comment.save()
+
+        self.replies.add(comment)
+
+        return comment
+
 
 
 @register_page
