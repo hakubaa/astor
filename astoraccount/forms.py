@@ -26,3 +26,9 @@ class ContentPageForm(IndexPageForm):
             "body": CKEditorWidget(),
             "tags": TextInput(attrs={"data-role": "tagsinput" }),
         }
+
+
+    def clean_tags(self):
+        data = self.cleaned_data["tags"]
+        data = list(set(tag.lower() for tag in data))
+        return data

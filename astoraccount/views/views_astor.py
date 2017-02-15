@@ -111,9 +111,10 @@ def page_edit(request, pk):
     form_data = dict(
         instance=page.specific,
         initial={
-            "tags": edit_string_for_tags(page.specific.tags.all())
+            "tags": edit_string_for_tags(page.specific.tags.all()).replace('"', '')
         }
     )
+
     if request.method == "POST":
         form = form_cls(request.POST, **form_data)
         if form.is_valid:

@@ -162,26 +162,32 @@
         }
     });
 
-    var tags = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace("name"),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: {
-            url: 'assets/citynames.json',
-            filter: function(list) {
-                return $.map(list, function(cityname) {
-                    return { name: cityname }; });
+    {% if "tags" in form.fields %}
+        var tags = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace("name"),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: {
+                url: "/api/tags/?format=json",
+                cache: false
             }
-        }
-    });
-    tags.initialize();
+        });
+        tags.clearRemoteCache();
+        tags.initialize();
+        $("#id_tags").tagsinput({
+            trimValue: true,
+            typeaheadjs: {
+                name: "tags",
+                displayKey: "name",
+                valueKey: "name",
+                source: tags.ttAdapter()
+            }
+        });
 
-    $('input').tagsinput({
-        typeaheadjs: {
-            name: "tags",
-            displayKey: "name",
-            valueKey: "name",
-            source: tags.ttAdapter()
-        }
-    });
+        // Do not allow capital letters in tags.
+        $(".bootstrap-tagsinput input").on("keyup keypress", function(e) {
+            this.value = this.value.toLowerCase();
+        }); 
+
+    {% endif %}
 </script>
 {% endblock %}

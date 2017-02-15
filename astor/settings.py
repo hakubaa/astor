@@ -210,3 +210,7 @@ CKEDITOR_CONFIGS = {
 MESSAGE_TAGS = {
     messages.ERROR: "danger"
 }
+
+
+TAGGIT_FORCE_LOWERCASE = True
+TAGGIT_STOPWORDS = [u'a', u'an', u'and', u'be', u'from', u'of']
