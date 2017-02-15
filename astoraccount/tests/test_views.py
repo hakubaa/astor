@@ -167,7 +167,10 @@ class PageEditTest(AstorTestCase):
             reverse("astoraccount:page_edit", kwargs={"pk": page.pk})
         ) 
         self.assertCountEqual(
-            response.context["form"]["tags"].value(),
+            list(map(
+                lambda x: x.strip(), 
+                response.context["form"]["tags"].value().split(",")
+            )),
             ["one", "two", "three"]
         )
 

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'astoraccount',
     'ckeditor',
     'taggit',
+    'rest_framework',
     
     'django.contrib.admin',
     'django.contrib.auth',
