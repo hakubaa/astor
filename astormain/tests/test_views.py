@@ -5,7 +5,8 @@ from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
 
 from astormain.views import home_page
-from astorcore.models import ContentPage, Page
+from astorcore.models import ContentPage, Page, Comment
+from astormain.forms import CommentForm
 
 
 User = get_user_model()
@@ -98,3 +99,19 @@ class PagesTest(TestCase):
         response = self.client.get(page.get_absolute_url())
         self.assertIsInstance(response.context["form"], CommentForm)
 
+    def test_post_request_creates_new_comment(self):
+        user, page = self.create_user_with_page(
+            title="Content Page 2131",
+            abstract="Applications of content pages",
+            body="Content pages are created mainly for"
+        )
+        self.client.login(username="Test", password="test")
+        response = self.client.post(
+            page.get_absolute_url(),
+            {"body": "Nice page!"}
+        )
+        self.assertEqual(Comment.objects.count(), 1)
+        comment = Comment.objects.first()
+        self.assertEqual(comment.body, "Nice page!")
+        self.assertEqual(comment.page.specific, page)
+        self.assertEqual(page.comments.count(), 1)

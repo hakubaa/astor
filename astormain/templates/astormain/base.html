@@ -1,27 +1,31 @@
 {% load static %}
 
 <!DOCTYPE html>
-    <head>
-        <title>ASTOR {% block title %}{% endblock %}</title>
-        <!-- <link rel="stylesheet/less" href="{% static 'bootstrap/less/bootstrap.less' %}"> -->
-        <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-        {% block styles %}{% endblock %}
-        <script src="{% static 'js/less.min.js' %}"></script>
-        {% block scripts %}{% endblock %}
-    </head>
-    <body>
-        {% include 'astormain/navbar.html' %}
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% block content %}{% endblock %}
+<html>
 
-        <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
-        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-        {% block scripts_body %}{% endblock %}
-    </body>
+<head>
+    <title>ASTOR {% block title %}{% endblock %}</title>
+    <!-- <link rel="stylesheet/less" href="{% static 'bootstrap/less/bootstrap.less' %}"> -->
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    {% block styles %}{% endblock %}
+    <script src="{% static 'js/less.min.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</head>
+
+<body>
+    {% include 'astormain/navbar.html' %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    {% block scripts_body %}{% endblock %}
+</body>
+    
 </html>

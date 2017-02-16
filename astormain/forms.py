@@ -10,8 +10,12 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ["body"]
         widgets = {
-            "body": forms.TextInput(
-                attrs={"placeholder": "Enter your comment."}
+            "body": forms.Textarea(
+                attrs={
+                    "placeholder": "Enter your comment.",
+                    "class": "form-control",
+                    "cols": 10, "rows": 3
+                }
             ),
         }
 

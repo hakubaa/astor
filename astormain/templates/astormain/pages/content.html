@@ -2,6 +2,8 @@
 
 {% block content %}
 {{ super }}
+<div class="container">
+    <!-- Analysis -->
     <div class="row">
         <h3 id="id_title">{{ page.title }}</h3>
         {% if page.tags %}
@@ -14,4 +16,42 @@
         <p id="id_abstract">{{ page.abstract }}</p>
         <p id="id_body">{{ page.body }}</p>
     </div>
+
+    <!-- Comment Form -->
+    <div class="row">
+        {% if user.is_authenticated %}
+            <form action="" method="POST">  
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.body }}
+                </div>
+                <input type="submit" value="Send Comment"/>
+            </form>
+        {% else %}
+            Login or register to add comment.
+        {% endif %}
+    </div>
+
+    <!-- Comments section -->
+    <div class="row">
+    {% if page.comments.count > 0 %}    
+        <ul id="comments">
+            {% for comment in page.comments.all %}
+                <li class="comment">
+                    <div class="author-avatar"></div>
+                    <div class="comment-contnet">
+                        <header>
+                            <a href="#">{{comment.author.username}}</a>
+                             - <span>{{comment.timestamp}}</span>
+                        </header>
+                        {{comment.body}}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        No comments.
+    {% endif %}
+    </div>
+</div>
 {% endblock %}

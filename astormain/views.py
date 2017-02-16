@@ -8,6 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
 
 from astorcore.models import Page
+from astormain.forms import CommentForm
 
 
 User = get_user_model()
@@ -20,8 +21,9 @@ def home_page(request):
                   { "newest_entries": newest_entries })
 
 
-class AnalysisView(LoginRequiredMixin, SingleObjectMixin, FormView):
+class AnalysisView(SingleObjectMixin, FormView):
     model = Page
+    form_class = CommentForm
 
     def get_object(self):
         try:
@@ -44,6 +46,21 @@ class AnalysisView(LoginRequiredMixin, SingleObjectMixin, FormView):
         context = super(AnalysisView, self).get_context_data(**kwargs)
         context["page"] = self.object
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super(AnalysisView, self).get_form_kwargs()
+        kwargs.update({
+            "page": self.get_object(),
+            "user": self.request.user
+        })
+        return kwargs
+
+    def get_success_url(self):
+        return self.get_object().get_absolute_url()
+
+    def form_valid(self, form):
+        form.save()
+        return super(AnalysisView, self).form_valid(form)
 
 
 def user_profile(request, username):
