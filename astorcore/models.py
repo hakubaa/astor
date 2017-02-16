@@ -48,7 +48,7 @@ class Page(models.Model):
         if not self.user:
             raise NoReverseMatch("Undefined owner of the page.")
         return reverse("astormain:page", 
-                       kwargs={"username": self.user.slug, "page_id": self.id})    
+                       kwargs={"username": self.user.slug, "pk": self.pk})    
 
 
 class BasePage(Page):
@@ -84,6 +84,8 @@ class BasePage(Page):
         null=True,
         editable=False
     )
+
+    comments_on = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         '''Saves the page. Sets unpublished changes to True.'''

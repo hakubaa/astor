@@ -55,7 +55,10 @@ class HomePageTest(TestCase):
 class PagesTest(TestCase):
 
     def create_user_with_page(self, **kwargs):
-        user = User.objects.create(username="Test", password="test")
+        user = User.objects.create_user(
+            username=kwargs.get("username", "Test"), 
+            password=kwargs.get("password", "test")
+        )
         page = user.add_page(
             ContentPage(**(kwargs or dict(title="My First Page")))
         )
@@ -63,11 +66,13 @@ class PagesTest(TestCase):
 
     def test_uses_correct_template(self):
         user, page = self.create_user_with_page()
+        self.client.login(username="Test", password="test")
         response = self.client.get(page.get_absolute_url())
         self.assertTemplateUsed(response, page.specific.template_name)
 
     def test_for_passing_page_to_template(self):
         user, page = self.create_user_with_page()
+        self.client.login(username="Test", password="test")
         response = self.client.get(page.get_absolute_url())
         self.assertEqual(response.context["page"], page.specific)
 
@@ -77,7 +82,19 @@ class PagesTest(TestCase):
             abstract="Applications of content pages",
             body="Contnet pages are created mainly for"
         )
+        self.client.login(username="Test", password="test")
         response = self.client.get(page.get_absolute_url())
         self.assertContains(response, page.specific.title)
         self.assertContains(response, page.specific.abstract)
         self.assertContains(response, page.specific.body)
+
+    def test_for_passing_comment_form_to_page(self):
+        user, page = self.create_user_with_page(
+            title="Content Page 2131",
+            abstract="Applications of content pages",
+            body="Content pages are created mainly for"
+        )
+        self.client.login(username="Test", password="test")
+        response = self.client.get(page.get_absolute_url())
+        self.assertIsInstance(response.context["form"], CommentForm)
+

@@ -1,6 +1,16 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import Http404
+from django.contrib.auth import get_user_model
+
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import FormView
 
 from astorcore.models import Page
+
+
+User = get_user_model()
 
 
 def home_page(request):
@@ -10,9 +20,30 @@ def home_page(request):
                   { "newest_entries": newest_entries })
 
 
-def user_page(request, username, page_id):
-    page = get_object_or_404(Page, pk=page_id).specific
-    return render(request, page.template_name, {"page": page})
+class AnalysisView(LoginRequiredMixin, SingleObjectMixin, FormView):
+    model = Page
+
+    def get_object(self):
+        try:
+            user = User.objects.filter(slug=self.kwargs["username"]).first()
+        except User.DoesNotExist:
+            raise Http404("User does not exist.")
+
+        try:
+            page = user.pages.get(pk=self.kwargs["pk"]).specific
+        except Page.DoesNotExist:
+            raise Http404("Analysis does not exist.")
+
+        return page
+
+    def get_template_names(self):
+        return [self.get_object().template_name]
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super(AnalysisView, self).get_context_data(**kwargs)
+        context["page"] = self.object
+        return context
 
 
 def user_profile(request, username):
