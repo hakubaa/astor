@@ -14,11 +14,15 @@ from astormain.forms import CommentForm
 User = get_user_model()
 
 
-def home_page(request):
-    newest_entries = [ page.specific for page in Page.objects.all() 
-                                     if page.specific.live ]
-    return render(request, "astormain/home.html", 
-                  { "newest_entries": newest_entries })
+class HomePageView(TemplateView):
+    template_name = "astormain/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        newest_entries = [ page.specific for page in Page.objects.all() 
+                                         if page.specific.live ]
+        context["newest_entries"] = newest_entries
+        return context
 
 
 class AnalysisView(SingleObjectMixin, FormView):
@@ -27,7 +31,7 @@ class AnalysisView(SingleObjectMixin, FormView):
 
     def get_object(self):
         try:
-            user = User.objects.filter(slug=self.kwargs["username"]).first()
+            user = User.objects.filter(slug=self.kwargs["slug"]).first()
         except User.DoesNotExist:
             raise Http404("User does not exist.")
 
@@ -63,5 +67,23 @@ class AnalysisView(SingleObjectMixin, FormView):
         return super(AnalysisView, self).form_valid(form)
 
 
-def user_profile(request, username):
-    pass
+class UserProfileView(SingleObjectMixin, TemplateView):
+    model = User
+    template_name = "astormain/profile.html"
+
+    def get_object(self):
+        try:
+            user = User.objects.filter(slug=self.kwargs["slug"]).first()
+        except User.DoesNotExist:
+            raise Http404("User does not exist.")
+        return user
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super(UserProfileView, self).get_context_data(**kwargs)
+        analyses = [page.specific for page in self.object.pages.all() 
+                                  if page.specific.live ]
+        analyses = sorted(analyses, key=lambda item: item.first_published_date, 
+                          reverse=True)
+        context["analyses"] = analyses
+        return context

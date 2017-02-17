@@ -11,8 +11,6 @@ import astoraccount.views as views
 
 app_name = "astoraccount"
 urlpatterns = [
-    url(r'^test/$', TemplateView.as_view(template_name="astoraccount/test.html"),
-        name="test"),
     url(r'^$', views.AccountIndexView.as_view(), name="index"),
     url(r'^404/$', TemplateView.as_view(template_name="astoraccount/404.html"), 
         name="404"),

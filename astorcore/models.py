@@ -48,7 +48,7 @@ class Page(models.Model):
         if not self.user:
             raise NoReverseMatch("Undefined owner of the page.")
         return reverse("astormain:page", 
-                       kwargs={"username": self.user.slug, "pk": self.pk})    
+                       kwargs={"slug": self.user.slug, "pk": self.pk})    
 
 
 class BasePage(Page):

@@ -22,8 +22,8 @@ class PageModelTest(TestCase):
         page = user.add_page(instance=Page())
         self.assertEqual(
             page.get_absolute_url(), 
-            reverse("astormain:page", kwargs={"username": user.slug,
-                                              "page_id": page.id}))
+            reverse("astormain:page", kwargs={"slug": user.slug,
+                                              "pk": page.pk}))
 
     def test_specific_returns_correct_type(self):
         page = BasePage(title="Test")

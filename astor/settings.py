@@ -139,6 +139,7 @@ STATICFILES_DIRS = (
 AUTH_USER_MODEL = "astoraccount.User"
 
 
+LOGIN_URL = "astoraccount:login"
 LOGIN_REDIRECT_URL = "astoraccount:index"
 
 
@@ -205,12 +206,10 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-
 # Set proper label for ERROR messages (bootstrap).
 MESSAGE_TAGS = {
     messages.ERROR: "danger"
 }
-
 
 TAGGIT_FORCE_LOWERCASE = True
 TAGGIT_STOPWORDS = [u'a', u'an', u'and', u'be', u'from', u'of']

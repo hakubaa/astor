@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
 
-from astormain.views import home_page
 from astorcore.models import ContentPage, Page, Comment
 from astormain.forms import CommentForm
 
@@ -13,10 +12,6 @@ User = get_user_model()
 
 
 class HomePageTest(TestCase):
-
-    def test_account_root_url_resolves_to_index_view(self):
-        found = resolve("/")
-        self.assertEqual(found.func, home_page)
 
     def test_uses_correct_template(self):
         response = self.client.get("/")
@@ -51,6 +46,60 @@ class HomePageTest(TestCase):
         response = self.client.get(reverse("astormain:home"))
         self.assertNotContains(response, page1.specific.title)
         self.assertContains(response, page2.specific.title)
+
+
+class UserProfileTest(TestCase):
+
+    def create_user_with_analyses(self, n=5):
+        user = User.objects.create_user(username="Test", password="test123")
+        for i in range(n):
+            user.add_page(ContentPage(
+                title="Test Title #{:d}".format(i),
+                abstract="Test Abstract #{:d}".format(i)
+            ))
+        return user
+
+    def test_for_rendering_correct_template(self):
+        user = self.create_user_with_analyses(n=0)
+        response = self.client.get(
+            reverse("astormain:profile", kwargs={"slug": user.slug})
+        )
+        self.assertTemplateUsed(response, "astormain/profile.html")
+
+    def test_for_passing_analyses_to_template(self):
+        user = self.create_user_with_analyses(n=1)
+        response = self.client.get(
+            reverse("astormain:profile", kwargs={"slug": user.slug})
+        )
+        analyses = response.context["analyses"]
+        self.assertIsNotNone(analyses)
+
+    def test_for_listing_analyses_with_title_and_abstract(self):
+        user = self.create_user_with_analyses(n=2)
+        page1, page2 = list(user.pages.all())
+        page1.specific.publish()
+        page2.specific.publish()
+        response = self.client.get(
+            reverse("astormain:profile", kwargs={"slug": user.slug})
+        )
+        content = response.content.decode()
+        self.assertIn(page1.specific.title, content)
+        self.assertIn(page2.specific.title, content)
+        self.assertIn(page1.specific.abstract, content)
+        self.assertIn(page2.specific.abstract, content)
+
+    def test_for_listing_only_published_analyses(self):
+        user = self.create_user_with_analyses(n=2)
+        page1, page2 = list(user.pages.all())
+        page1.specific.publish()
+        response = self.client.get(
+            reverse("astormain:profile", kwargs={"slug": user.slug})
+        )
+        content = response.content.decode()
+        self.assertIn(page1.specific.title, content)
+        self.assertNotIn(page2.specific.title, content)
+        self.assertIn(page1.specific.abstract, content)
+        self.assertNotIn(page2.specific.abstract, content)        
 
 
 class PagesTest(TestCase):

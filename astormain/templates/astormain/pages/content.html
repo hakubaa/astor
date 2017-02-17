@@ -5,7 +5,7 @@
 <div class="container">
     <!-- Analysis -->
     <div class="row">
-        <h3 id="id_title">{{ page.title }}</h3>
+        <h3>{{ page.title }}</h3>
         {% if page.tags %}
             <ul id="id_tags">
                 {% for tag in page.tags.all %}
@@ -13,12 +13,12 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        <p id="id_abstract">{{ page.abstract }}</p>
-        <p id="id_body">{{ page.body }}</p>
+        <p>{{ page.abstract }}</p>
+        <p>{{ page.body }}</p>
     </div>
 
     <!-- Comment Form -->
-    <div class="row">
+    <div class="row" id="id_comment_form">
         {% if user.is_authenticated %}
             <form action="" method="POST">  
                 {% csrf_token %}
@@ -28,18 +28,20 @@
                 <input type="submit" value="Send Comment"/>
             </form>
         {% else %}
-            Login or register to add comment.
+            Only authenticated users can leave comments. Please 
+            <a href="{% url 'astoraccount:login' %}?next={{page.get_absolute_url}}">login</a> or 
+            <a href="#">register</a> to add comment.
         {% endif %}
     </div>
 
     <!-- Comments section -->
     <div class="row">
     {% if page.comments.count > 0 %}    
-        <ul id="comments">
+        <ul id="id_comments">
             {% for comment in page.comments.all %}
                 <li class="comment">
                     <div class="author-avatar"></div>
-                    <div class="comment-contnet">
+                    <div class="comment-body">
                         <header>
                             <a href="#">{{comment.author.username}}</a>
                              - <span>{{comment.timestamp}}</span>

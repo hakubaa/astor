@@ -1,0 +1,15 @@
+<div class="row">
+    <h3 id="id_profile_heading">{{user.username}}'s profile page.</h3>
+</div>  
+<div class="row">
+    <ul>
+    {% for analysis in analyses %}
+        <li class="analysis-wrapper">
+            <div class="analysis-title">
+                <a href="{{ analysis.get_absolute_url }}">{{ analysis.title }}</a>
+            </div>
+            <div class="analysis-abstract">{{ analysis.abstract }}</div>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
