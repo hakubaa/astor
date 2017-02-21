@@ -7,3 +7,8 @@ urlpatterns = [
     url(r'^api/', include("astorcore.urls_api", namespace="api")),
     url(r'^', include("astormain.urls"))
 ]
+
+urlpatterns += [
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
+]

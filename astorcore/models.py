@@ -48,7 +48,10 @@ class Page(models.Model):
         if not self.user:
             raise NoReverseMatch("Undefined owner of the page.")
         return reverse("astormain:page", 
-                       kwargs={"slug": self.user.slug, "pk": self.pk})    
+                       kwargs={"slug": self.user.slug, "pk": self.pk})  
+
+    def __repr__(self):
+        return "{!r} ({:d})".format(self.specific.__class__.__name__, self.pk)
 
 
 class BasePage(Page):
@@ -147,7 +150,7 @@ class Comment(models.Model):
         related_name="comments"           
     )
     page = models.ForeignKey(
-        BasePage, on_delete=models.CASCADE, blank=True, null=True, 
+        BasePage, on_delete=models.CASCADE, blank=True, null=True,
         related_name="comments"
     )
     parent = models.ForeignKey(

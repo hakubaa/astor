@@ -59,9 +59,12 @@ class FunctionalTest(StaticLiveServerTestCase):
             "Could not load page withc url ends wiht '%s'." % text
         )      
 
-    def login_user(self, username, password, test_for_login=True):
-        self.browser.get(self.live_server_url + "/account/login")
-        self.browser.implicitly_wait(3)
+    def login_user(self, username, password, test_for_login=True,
+                   open_login_page=True):
+
+        if open_login_page:
+            self.browser.get(self.live_server_url + "/account/login")
+            self.browser.implicitly_wait(3)
 
         input_username = self.browser.find_element_by_id("id_username")
         input_password = self.browser.find_element_by_id("id_password")
@@ -73,7 +76,8 @@ class FunctionalTest(StaticLiveServerTestCase):
             "//button[@type='submit' and @value='Login']"
         ).click()
 
-        self.wait_for_page_which_url_ends_with("/account/")
+        if test_for_login:
+            self.wait_for_page_which_url_ends_with("/account/")
 
         # WebDriverWait(self.browser, timeout = 10).until(
         #     lambda b: b.find_element_by_link_text("Logout"),

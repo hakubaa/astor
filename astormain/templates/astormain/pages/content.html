@@ -1,5 +1,20 @@
 {% extends 'astormain/base.html' %}
 
+{% block styles %}
+{{ super }}
+<style>
+    .commentlist {
+        list-style:none; 
+        margin: 1em 0em;
+        padding: 0px; 
+        background-color: lightblue;
+    }
+    .comment {
+        border: 1px solid red;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 {{ super }}
 <div class="container">
@@ -19,6 +34,7 @@
 
     <!-- Comment Form -->
     <div class="row" id="id_comment_form">
+        <h4>Comments</h4>
         {% if user.is_authenticated %}
             <form action="" method="POST">  
                 {% csrf_token %}
@@ -32,28 +48,36 @@
             <a href="{% url 'astoraccount:login' %}?next={{page.get_absolute_url}}">login</a> or 
             <a href="#">register</a> to add comment.
         {% endif %}
-    </div>
 
-    <!-- Comments section -->
-    <div class="row">
-    {% if page.comments.count > 0 %}    
-        <ul id="id_comments">
-            {% for comment in page.comments.all %}
-                <li class="comment">
-                    <div class="author-avatar"></div>
-                    <div class="comment-body">
-                        <header>
-                            <a href="#">{{comment.author.username}}</a>
-                             - <span>{{comment.timestamp}}</span>
-                        </header>
-                        {{comment.body}}
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        No comments.
-    {% endif %}
+        {% if page.comments.count > 0 %}    
+            <ul class="commentlist">
+                {% for comment in page.comments.all %}
+                    <li class="comment">
+                        <div class="comment-body">
+                            <header>
+                                <a href="#">{{comment.author.username}}</a>
+                                 - <span>{{comment.timestamp}}</span>
+                            </header>
+                            <section>
+                                {{comment.body}}
+                                <a href="#">Reply</a>
+                                <div class="form-group">
+                                    <textarea class="form-control" placeholder="Enter your comment." rows="3"></textarea>
+                                </div>
+                                <button>Reply</button>
+                            </section>
+                            <footer>
+                                {% if comment.replies.count > 0 %}
+                                    <a href="#">Show replies ({{comment.replies.count}})</a>
+                                {% endif %}
+                            </footer>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            No comments.
+        {% endif %}
     </div>
 </div>
 {% endblock %}

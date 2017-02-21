@@ -7,7 +7,11 @@
 
 {% block content %}
     <h2>Login</h2>
-    <form method="post" action="{% url 'astoraccount:login' %}">
+    {% if next %}
+        <form method="POST" action="{% url 'astoraccount:login' %}?next={{next}}">
+    {% else %}
+        <form method="POST" action="{% url 'astoraccount:login' %}">
+    {% endif %}
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" value="Login">Login</button>

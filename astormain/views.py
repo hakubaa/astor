@@ -8,7 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
 
 from astorcore.models import Page
-from astormain.forms import CommentForm
+from astormain.forms import CommentForm, ReplyForm
 
 
 User = get_user_model()
@@ -55,7 +55,7 @@ class AnalysisView(SingleObjectMixin, FormView):
         kwargs = super(AnalysisView, self).get_form_kwargs()
         kwargs.update({
             "page": self.get_object(),
-            "user": self.request.user
+            "author": self.request.user
         })
         return kwargs
 

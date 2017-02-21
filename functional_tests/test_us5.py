@@ -75,13 +75,13 @@ class AddComentsTest(FunctionalTest):
         # enters his username and password.
         self.browser.find_element_by_link_text("login").click()
         self.wait_for_page_with_text_in_url("account/login/")
-        self.login_user(username="Spider", password="spider1")
+        self.login_user(username="Spider", password="spider1",
+                        open_login_page=False, test_for_login=False)
+
+        import time; time.sleep(3)
 
         # After successful login he is automatically redirected to last page.
-        ## skip now, see how next works
-        # self.assertEqual(self.browser.current_url, fly_page_url)
-        self.browser.get(fly_page_url)
-        self.wait_for_page_with_text_in_url("da/fly")
+        self.assertEqual(self.browser.current_url, fly_page_url)
 
         # The previous information disappeared and now he can see form to 
         # enter comment.
