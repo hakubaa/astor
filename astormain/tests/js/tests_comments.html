@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Mocha Tests</title>
+        <link rel="stylesheet" href="../../../static/tests/mocha.css">
+    </head>
+
+    <body>
+        <div id="fixtures"></div>
+
+        <div id="mocha"></div>
+
+        <script src="../../../static/js/jquery-3.1.1.min.js"></script>
+        <script src="../../../static/tests/mocha.js"></script>
+        <script src="../../../static/tests/chai.js"></script>
+        <script src="../../../static/tests/sinon-1.17.7.js"></script>
+        <script>mocha.setup("bdd");</script>
+
+        <!-- load code you want to test heere -->
+        <script src="../../static/astormain/js/comments.ajax.js"></script> 
+
+        <!-- load your test files here -->
+        <script>
+            var assert = chai.assert;
+            var expect = chai.expect;
+
+            describe("Comments Test - Requests & Responses", function() {
+
+            describe("sendRequest Test", function() {
+                
+                describe("Sending Request", function() {
+
+                    var xhr = null;
+                    var requests = null;
+
+                    beforeEach(function() {
+                        xhr = sinon.useFakeXMLHttpRequest();
+                        requests = [];
+                        xhr.onCreate = function(xhr) {
+                            requests.push(xhr);
+                        };
+                    });
+
+                    afterEach(function() {
+                        xhr.restore();
+                    });
+
+                    it("test for sending post request", function() {
+                        sendRequest({
+                            url: "fake_url",
+                            method: "POST"
+                        });
+                        assert.equal(requests.length, 1);
+                        assert.equal(requests[0].method, "POST");
+                    });
+
+                    it("test for sending get request", function() {
+                        sendRequest({
+                            url: "fake_url",
+                            method: "GET"
+                        });
+                        assert.equal(requests.length, 1);
+                        assert.equal(requests[0].method, "GET");
+                    });
+
+                    it("test for using proper url", function() {
+                        sendRequest({
+                            url: "test_url"
+                        });
+                        assert.equal(requests[0].url, "test_url");
+                    });
+                });
+
+                it("Handling Response", function() {
+
+                });
+
+            });
+
+            describe("", function() {
+                
+            });
+
+            });
+
+        </script>
+
+        <script>
+            mocha.run();
+        </script>
+    </body>
+
+</html>

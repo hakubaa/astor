@@ -1,6 +1,6 @@
 import operator
 from functools import reduce
-from collections import ChainMap
+from copy import copy
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -125,8 +125,9 @@ class AnalysisCommentList(generics.ListCreateAPIView):
 
     def post(self, request, format=None, **kwargs):
         analysis = self.get_object()
-        request.data["page"] = analysis.pk # required by serializer
-        serializer = CommentSerializer(data=request.data)
+        data = copy(request.data)
+        data["page"] = analysis.pk # required by serializer
+        serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save(author=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -162,8 +163,9 @@ class CommentReplyList(#MappingFieldsLookupMixin,
 
     def post(self, request, format=None, **kwargs):
         comment = self.get_object()
-        request.data["parent"] = comment.pk # required by serializer
-        serializer = CommentSerializer(data=request.data)
+        data = copy(request.data)
+        data["parent"] = comment.pk # required by serializer
+        serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save(author=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

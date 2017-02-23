@@ -1,16 +1,39 @@
 {% extends 'astormain/base.html' %}
+{% load static %}
 
 {% block styles %}
 {{ super }}
 <style>
     .commentlist {
         list-style:none; 
+        padding-left: 2em;
         margin: 1em 0em;
-        padding: 0px; 
-        background-color: lightblue;
+    }
+    .rootlist {
+        padding-left: 1em;
     }
     .comment {
-        border: 1px solid red;
+        padding: 10px;
+        margin: 10px 0px;
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.4);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.4);
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.4);
+    }
+    .comment-body {
+        border-bottom: 1px solid lightgrey;
+        padding-bottom: 1em;
+    }
+    .comment-header {
+        padding-bottom: 1em;
+    }
+    .comment-replies a:not(:first-child) {
+        color: green;
+        margin-left: 1em;
+    }
+    .reply-form {
+        display: none;
+        padding: 10px;
+        margin: 10px 0px;
     }
 </style>
 {% endblock %}
@@ -50,27 +73,38 @@
         {% endif %}
 
         {% if page.comments.count > 0 %}    
-            <ul class="commentlist">
+            <ul class="commentlist rootlist">
                 {% for comment in page.comments.all %}
-                    <li class="comment">
-                        <div class="comment-body">
-                            <header>
-                                <a href="#">{{comment.author.username}}</a>
-                                 - <span>{{comment.timestamp}}</span>
+                    <li class="comment" data-cid="{{comment.id}}">
+                        <div>
+                            <header class="comment-header">
+                                <a href="#">
+                                    <span class="comment-author">{{comment.author.username}}</span>
+                                </a>
+                                 - <span class="comment-timestamp">
+                                    {{comment.timestamp|date:'Y-m-d H:i'}}
+                                </span>
                             </header>
-                            <section>
-                                {{comment.body}}
-                                <a href="#">Reply</a>
-                                <div class="form-group">
-                                    <textarea class="form-control" placeholder="Enter your comment." rows="3"></textarea>
-                                </div>
-                                <button>Reply</button>
+                            <section class="comment-body">
+                                <p>{{comment.body}}</p>
                             </section>
-                            <footer>
-                                {% if comment.replies.count > 0 %}
-                                    <a href="#">Show replies ({{comment.replies.count}})</a>
+                            <section class="comment-replies">
+                                {% if user.is_authenticated %}
+                                    <a href="#" class="show-reply-form-btn">Reply</a>
+                                    <div class="reply-form">
+                                        <div class="form-group reply-body">
+                                            <textarea class="form-control" placeholder="Enter your comment." rows="3"></textarea>
+                                        </div>
+                                        <button class="send-reply-btn">Send Reply</button>
+                                        <button class="abort-reply-btn">Abort</button>
+                                    </div>
                                 {% endif %}
-                            </footer>
+                                {% if comment.replies.count > 0 %}
+                                    <a href="#" class="show-replies-btn">
+                                        Show replies ({{comment.replies.count}})
+                                    </a>
+                                {% endif %}
+                            </section>
                         </div>
                     </li>
                 {% endfor %}
@@ -80,4 +114,15 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts_body %}
+{{ super }}
+<script src="{% static 'astormain/js/comments.ajax.js' %}"></script> 
+<script src="{% static 'astormain/js/comments.ui.js' %}"></script>
+<script>
+    function is_authenticated() {
+        return {{request.user.is_authenticated|yesno:"true,false"}};
+    }
+</script>
 {% endblock %}

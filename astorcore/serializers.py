@@ -85,7 +85,7 @@ class CommentSerializer(serializers.ModelSerializer):
     replies = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True, required=False
     )
-    # author = serializers.ReadOnlyField(source="author.username")
+    author = serializers.ReadOnlyField(source="author.username")
 
     class Meta:
         model = Comment
