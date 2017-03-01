@@ -15,9 +15,9 @@
             <ul class="nav navbar-nav" id="mainNavbar">
                 <li><a href="#">BROWSE</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'astoraccount:index' %}">MyASTOR</a></li>
+                    <li><a href="{% url 'astoraccount:index' %}">MY ASTOR</a></li>
                 {% else %}
-                    <li><a href="{% url 'astoraccount:login' %}">MyASTOR</a></li>
+                    <li><a href="{% url 'astoraccount:login' %}">MY ASTOR</a></li>
                 {% endif %}
             </ul>
 

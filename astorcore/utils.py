@@ -42,3 +42,10 @@ def clone_page(page, skip_fields=["published_page"]):
         ptrs[model_class] = page_clone
 
     return page_clone
+
+
+def user_directory_path(instance, filename):
+    '''
+    Create path where the file will be save: MEDIA_ROOT/analyses/user_slug/page_pk/<filename>
+    '''
+    return "analyses/{0}/{1}/{2}".format(instance.user.slug, instance.pk, filename)

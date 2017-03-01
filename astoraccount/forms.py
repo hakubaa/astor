@@ -3,7 +3,9 @@ from django.forms.widgets import TextInput
 
 from ckeditor.widgets import CKEditorWidget
 
-from astorcore.models import IndexPage, ContentPage
+from astorcore.models import (
+    IndexPage, ContentPage, HTMLUploadPage
+)
 from astorcore.decorators import register_form
 
 
@@ -32,3 +34,10 @@ class ContentPageForm(IndexPageForm):
         data = self.cleaned_data["tags"]
         data = list(set(tag.lower() for tag in data))
         return data
+
+
+@register_form
+class HTMLUploadPageForm(ModelForm):
+    class Meta:
+        model = HTMLUploadPage
+        fields = ["title", "abstract", "file"]

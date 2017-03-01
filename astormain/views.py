@@ -25,6 +25,30 @@ class HomePageView(TemplateView):
         return context
 
 
+class ExternalFileView(SingleObjectMixin, TemplateView):
+
+    def get_object(self):
+        try:
+            user = User.objects.filter(slug=self.kwargs["slug"]).first()
+        except User.DoesNotExist:
+            raise Http404("User does not exist.")
+
+        try:
+            page = user.pages.get(pk=self.kwargs["pk"]).specific
+        except Page.DoesNotExist:
+            raise Http404("Analysis does not exist.")
+
+        return page
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super(ExternalFileView, self).get_context_data(**kwargs)
+        return context
+
+    def get_template_names(self):
+        return [ self.get_object().file.name ]
+
+
 class AnalysisView(SingleObjectMixin, FormView):
     model = Page
     form_class = CommentForm

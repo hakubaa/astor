@@ -1,0 +1,61 @@
+<!-- Comments -->
+
+<div class="row" id="commentform-section">
+    <h3>Comments</h3>
+    {% if user.is_authenticated %}
+        <form action="" method="POST">  
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.body }}
+            </div>
+            <input type="submit" value="Send Comment"/>
+        </form>
+    {% else %}
+        Only authenticated users can leave comments. Please 
+        <a href="{% url 'astoraccount:login' %}?next={{page.get_absolute_url}}">login</a> or 
+        <a href="#">register</a> to add comment.
+    {% endif %}
+</div>
+
+<div class="row" id="comments-section">
+    {% if page.comments.count > 0 %}    
+        <ul class="commentlist rootlist">
+            {% for comment in page.comments.all %}
+                <li class="comment" data-cid="{{comment.id}}">
+                    <div>
+                        <header class="comment-header">
+                            <a href="#">
+                                <span class="comment-author">{{comment.author.username}}</span>
+                            </a>
+                             - <span class="comment-timestamp">
+                                {{comment.timestamp|date:'Y-m-d H:i'}}
+                            </span>
+                        </header>
+                        <section class="comment-body">
+                            <p>{{comment.body}}</p>
+                        </section>
+                        <section class="comment-replies">
+                            {% if user.is_authenticated %}
+                                <a href="#" class="show-reply-form-btn">Reply</a>
+                                <div class="reply-form">
+                                    <div class="form-group reply-body">
+                                        <textarea class="form-control" placeholder="Enter your comment." rows="3"></textarea>
+                                    </div>
+                                    <button class="send-reply-btn">Send Reply</button>
+                                    <button class="abort-reply-btn">Abort</button>
+                                </div>
+                            {% endif %}
+                            {% if comment.replies.count > 0 %}
+                                <a href="#" class="show-replies-btn">
+                                    Show replies ({{comment.replies.count}})
+                                </a>
+                            {% endif %}
+                        </section>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="lead">No comments. {% if user.is_authenticated %}Be the first one.{% endif %}</p>
+    {% endif %}
+</div>

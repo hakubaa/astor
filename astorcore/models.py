@@ -10,7 +10,7 @@ from django.urls.exceptions import NoReverseMatch
 from taggit.managers import TaggableManager
 
 from astorcore.decorators import register_page
-from astorcore.utils import clone_page
+from astorcore.utils import clone_page, user_directory_path
 
 
 class Page(models.Model):
@@ -191,7 +191,24 @@ class IndexPage(BasePage):
 class ContentPage(BasePage):
     verbose_name = "content page"
     template_name = "astormain/pages/content.html"
-    help_text = "Provide some content and I will be hapy."
+    help_text = "Provide some content and I will be happy."
 
     abstract = models.TextField(default="", blank=True) 
     body = models.TextField(blank=True)
+
+
+class AbstractUploadPage(BasePage):
+    verbose_name = "base file page"
+
+    class Meta:
+        abstract = True
+
+    abstract = models.TextField(default="", blank=True) 
+    file = models.FileField(upload_to=user_directory_path)
+
+
+@register_page
+class HTMLUploadPage(AbstractUploadPage):
+    verbose_name = "HTML upload page"
+    help_text = "Upload HTML file and I will render it for you."
+    template_name = "astormain/pages/html_file.html"

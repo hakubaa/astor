@@ -1,0 +1,13 @@
+{% extends "astoraccount/base.html" %}
+
+{% load static %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+
+  <p><a href="{% url 'astormain:home' %}">Return to home</a></p>
+{% endblock %}

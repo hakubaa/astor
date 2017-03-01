@@ -1,14 +1,23 @@
 import unittest
 import random
 import string
+import io
+import operator
+from unittest.mock import Mock, patch
+from functools import partial
 
 from django.test import TestCase
 from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model, get_user
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from astorcore.models import BasePage, ContentPage, IndexPage, Page
-from astoraccount.forms import ContentPageForm, IndexPageForm
+from astorcore.models import (
+    BasePage, ContentPage, IndexPage, Page, HTMLUploadPage
+)
+from astoraccount.forms import (
+    ContentPageForm, IndexPageForm, HTMLUploadPageForm
+)
 import astorcore.decorators as decos
 
 User = get_user_model()
@@ -173,6 +182,25 @@ class PageEditTest(AstorTestCase):
             )),
             ["one", "two", "three"]
         )
+
+
+class UploadPageTest(AstorTestCase):
+
+    def test_for_handling_post_request(self):
+        user = self.create_and_login_user()
+        page = user.add_page(instance=HTMLUploadPage())
+
+        html_page = SimpleUploadedFile(
+            "test.html", b"<html></html>", content_type="text/html"
+        )
+    
+        response = self.client.post(
+            reverse("astoraccount:page_edit", kwargs={"pk": page.pk}),
+            {"title": "My First File", "file": html_page,
+             "action_type": "save_draft"}
+        )
+
+        self.assertEqual(response.status_code, 200)
 
 
 class AuthViewsTest(AstorTestCase):

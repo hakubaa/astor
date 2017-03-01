@@ -1,11 +1,14 @@
 import unittest
 
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
 
-from astorcore.models import ContentPage, Page, Comment
+from astorcore.models import (
+    ContentPage, Page, Comment, HTMLUploadPage
+)
 from astormain.forms import CommentForm, ReplyForm
+import astormain.views as views
 
 
 User = get_user_model()
@@ -175,3 +178,45 @@ class PagesTest(TestCase):
         self.assertEqual(comment.body, "Nice page!")
         self.assertEqual(comment.page.specific, page)
         self.assertEqual(page.comments.count(), 1)
+
+
+class ExternalFileView(TestCase):
+
+    @staticmethod
+    def setup_view(view, request, *args, **kwargs):
+        view.request = request
+        view.args = args
+        view.kwargs = kwargs
+        return view
+
+    def test_get_object_returns_specific_page(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = user.add_page(HTMLUploadPage(title="File Page", file="test.html"))
+
+        request_factory = RequestFactory()
+        request = request_factory.get(
+            "/fake_url", data={"slug": user.slug, "pk": page.pk}
+        )
+
+        view = views.ExternalFileView()
+        view = ExternalFileView.setup_view(view, request, slug=user.slug, 
+                                         pk=page.pk)
+
+        page_view = view.get_object()
+
+        self.assertEqual(page, page_view)
+
+    def test_returns_correct_template(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = user.add_page(HTMLUploadPage(title="File Page", file="test.html"))
+
+        request_factory = RequestFactory()
+        request = request_factory.get(
+            "/fake_url", data={"slug": user.slug, "pk": page.pk}
+        )
+
+        view = views.ExternalFileView()
+        view = ExternalFileView.setup_view(view, request, slug=user.slug, 
+                                         pk=page.pk)
+                                                 
+        self.assertEqual(view.get_template_names()[0], page.file.url)

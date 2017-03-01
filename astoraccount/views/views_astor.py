@@ -10,6 +10,8 @@ from django.core.paginator import Paginator
 from django.views.generic import TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 
 from taggit.utils import edit_string_for_tags
 
@@ -116,8 +118,8 @@ def page_edit(request, pk):
     )
 
     if request.method == "POST":
-        form = form_cls(request.POST, **form_data)
-        if form.is_valid:
+        form = form_cls(request.POST, request.FILES, **form_data)
+        if form.is_valid():
             page = form.save()
 
             request.user.add_activity(
