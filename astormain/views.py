@@ -19,9 +19,9 @@ class HomePageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        newest_entries = [ page.specific for page in Page.objects.all() 
+        featured_analyses = [ page.specific for page in Page.objects.all() 
                                          if page.specific.live ]
-        context["newest_entries"] = newest_entries
+        context["featured_analyses"] = featured_analyses
         return context
 
 

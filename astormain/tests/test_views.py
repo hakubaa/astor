@@ -31,7 +31,7 @@ class HomePageTest(TestCase):
         response = self.client.get("/")
         self.assertContains(response, "/login")
 
-    def test_displays_titles_of_the_latest_entries(self):
+    def test_displays_titles_of_the_latest_analyses(self):
         user = User.objects.create(username="Test", password="test")
         page = user.add_page(instance=ContentPage(title="My First Entry"))
         pub_page = page.publish()

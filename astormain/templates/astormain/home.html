@@ -1,16 +1,133 @@
 {% extends "astormain/base.html" %}
 
+{% block styles %}
+{{ super }}
+<style>
+    /*http://www.colourlovers.com/palette/59867/Blown_Entrepreneur*/
+        /*http://www.colourlovers.com/palette/1/metro*/
+    .fa-wrapper {
+        max-height: 400px;
+        overflow: hidden;
+    }
+    .featured-analyses {
+        list-style: outside none none;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        padding: 0px;
+    }
+    .featured-analysis {
+        border: 1px solid #BDB8AD;
+        padding: 0px 2em 0px 1em;
+        cursor: pointer;
+        border-radius: 5px;
+        height: 50px;
+    }
+    .featured-analysis:not(:last-child) {
+        margin-bottom: 10px;
+    }
+    .featured-analysis.toggled {
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.4);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.4);
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.4);
+        background-color: #EBE7E0;
+        height: 160px;
+    } 
+    .fa-title h3 {
+        margin: 0.5em 0px;
+    }
+    .fa-title a {
+        color: black;
+        text-decoration: none;
+    }
+    .featured-analysis:not(:first-child) .fa-info {
+        display: none;
+    }
+    .fa-abstract {
+        text-align: justify;
+        text-justify: inter-word;
+    }
+    .fa-img {
+        margin: 5px 0px;
+        height: 390px; 
+        width: 100%;
+        overflow: hidden;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+        -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+    }
+    @media (max-width: 992px) {
+        .fa-img {
+            display: none;
+        }
+        .fa-wrapper {
+            height: auto;
+            overflow: visible;
+        }
+        .featured-analysis.toggled {
+            height: auto;
+        } 
+    }
+
+    .la-wrapper {
+        margin-top: 2em;
+    }
+    .undertitle {
+        border-bottom: 2px solid black;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 {{ super }}
 <div class="container">
-    <p>The newest entries.</p>
-    <ul id="id_newest_entries">
-    {% for entry in newest_entries %}
-        <li>
-            <a href="{{ entry.get_absolute_url }}">{{entry.title}}</a>
-            (<span class="entry_author">{{entry.user.username}}</span>)
-        </li>
-    {% endfor %}
-    </ul>
+    <div class="row fa-wrapper">
+        <div class="col-md-7">
+            <ul class="featured-analyses">
+            {% for analysis in featured_analyses %}
+                <li class="featured-analysis {% if forloop.counter0 == 0 %} toggled {% endif %}">
+                    <div class="fa-title">
+                        <h3><a href="{{ analysis.get_absolute_url }}">{{analysis.title}}</a></h3>
+                    </div>
+                    <div class="fa-info">
+                        <!-- by <span class="fa-author">{{analysis.user.username}}</span> -->
+                        <p class="fa-abstract">{{analysis.abstract|truncatewords:50}}</p>
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-5">
+            <img class="fa-img" src="http://www.foreverfaith.co.uk/wp-content/uploads/2014/12/Graph_01.gif">
+        </div>
+    </div>
+    <div class="row la-wrapper">
+        <div class="col-md-7">
+            <h3 class="undertitle">The Latest Analyses</h3>
+        </div>
+        <div class="col-md-5">
+            <h3 class="undertitle">The Most Popular</h3>
+        </div>
+    </div>
 </div>
 {% endblock %}
+
+{% block scripts_body %}
+{{ super }}
+<script>
+    $(".featured-analysis").click(function(event) {
+        if ($(this).hasClass("toggled")) {
+            window.open($(this).find("a").attr("href"), "_self");
+        } else {
+            $(".fa-info").hide();
+            $(this).children(".fa-info").show();
+            $(".featured-analysis").removeClass("toggled");
+            $(this).addClass("toggled");
+        }
+        event.stopPropagation();
+        return false;
+    });
+</script>
+{% endblock %}
+
+
+<!-- "Share your insights and learn what others found." -->

@@ -4,15 +4,32 @@
 <html>
 
 <head>
-    <title>ASTOR {% block title %}{% endblock %}</title>
+    <title>ASTOR - Analyses Storage{% block title %}{% endblock %}</title>
     <!-- <link rel="stylesheet/less" href="{% static 'bootstrap/less/bootstrap.less' %}"> -->
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <style>
+        @media (max-width: 768px) {
+            #astor-banner {
+                display: none;
+            }
+        }
+    </style>
     {% block styles %}{% endblock %}
     <script src="{% static 'js/less.min.js' %}"></script>
     {% block scripts %}{% endblock %}
 </head>
 
 <body>
+
+    <div class="container" id="astor-banner">
+        <div class="row">
+            <h2>
+                ASTOR - Analyses Storage<br/>
+                <small id="astor-intro">Share your insights and learn what others found.</small>
+            </h2>
+        </div>
+    </div>
+
     {% include 'astormain/navbar.html' %}
     {% if messages %}
     <ul class="messages">
