@@ -73,6 +73,11 @@ class AnalysisView(SingleObjectMixin, FormView):
         self.object = self.get_object()
         context = super(AnalysisView, self).get_context_data(**kwargs)
         context["page"] = self.object
+
+        # Register visit. get_context_data is run only once before rendering
+        # the page, so it's not the worst place to put this code
+        self.object.register_visit(self.request)
+
         return context
 
     def get_form_kwargs(self):

@@ -6,11 +6,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey    
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
+from django.core.exceptions import ValidationError
 
 from taggit.managers import TaggableManager
 
 from astorcore.decorators import register_page
-from astorcore.utils import clone_page, user_directory_path
+from astorcore.utils import clone_page, user_directory_path, get_client_ip
 
 
 class Page(models.Model):
@@ -51,15 +52,7 @@ class Page(models.Model):
 
     def register_visit(self, request=None, user=None):
         '''Register page visit.'''
-        visit = PageVisit.objects.create(
-            page = self, 
-            user = user or (
-                getattr(request, "user", None) 
-                and (request.user.is_authenticated() or None) 
-                and request.user
-            )
-        )
-        return visit
+        return PageVisit.create(self, request, user)
 
     def __repr__(self):
         return "{!r} ({:d})".format(self.specific.__class__.__name__, self.pk)
@@ -75,7 +68,38 @@ class PageVisit(models.Model):
         settings.AUTH_USER_MODEL, 
         on_delete=models.SET_NULL, blank=True, null=True,
         related_name="+")
+
     timestamp = models.DateTimeField(default=timezone.now)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.TextField(blank=True, null=True)
+    request_method = models.CharField(max_length=16, blank=True, null=True)
+
+    class Meta:
+        unique_together = ("page", "ip_address")
+
+    @classmethod
+    def create(cls, page, request=None, user=None):
+        '''Create PageVisit object.'''
+        http_headers = getattr(request, "META", dict())
+        visit = cls(
+            page = page,
+            user = user or (
+                getattr(request, "user", None) 
+                and (request.user.is_authenticated() or None) 
+                and request.user
+            ),
+            ip_address = get_client_ip(request),
+            user_agent = http_headers.get("HTTP_USER_AGENT"),
+            request_method = http_headers.get("REQUEST_METHOD")
+        )
+
+        try:
+            visit.full_clean()
+        except ValidationError:
+            return None
+        else:
+            visit.save()
+            return visit
 
 
 class BasePage(Page):

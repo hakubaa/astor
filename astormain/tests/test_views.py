@@ -5,7 +5,7 @@ from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
 
 from astorcore.models import (
-    ContentPage, Page, Comment, HTMLUploadPage
+    ContentPage, Page, Comment, HTMLUploadPage, PageVisit, BasePage
 )
 from astormain.forms import CommentForm, ReplyForm
 import astormain.views as views
@@ -180,6 +180,43 @@ class PagesTest(TestCase):
         self.assertEqual(page.comments.count(), 1)
 
 
+class RegisterVisitTest(TestCase):
+
+    def create_user_with_page(self, **kwargs):
+        user = User.objects.create_user(
+            username=kwargs.get("username", "Test"), 
+            password=kwargs.get("password", "test")
+        )
+        page = user.add_page(
+            BasePage(**(kwargs or dict(title="My First Page")))
+        )
+        return user, page    
+
+    def test_registers_visit_of_anonymous_user(self):
+        user, page = self.create_user_with_page()
+        self.client.get(page.get_absolute_url())
+        self.assertEqual(page.visits.count(), 1)
+        visit = page.visits.first()
+        self.assertIsNone(visit.user)
+
+    def test_registers_visit_of_logged_in_user(self):
+        user, page = self.create_user_with_page()
+        self.client.login(username="Test", password="test")
+        self.client.get(page.get_absolute_url())
+        self.assertEqual(page.visits.count(), 1)
+        visit = page.visits.first()
+        self.assertEqual(visit.user, user)
+
+    def test_registers_only_the_first_visit_from_given_id(self):
+        user, page = self.create_user_with_page()
+        self.client.get(page.get_absolute_url())
+        self.client.login(username="Test", password="test")
+        self.client.get(page.get_absolute_url())
+        self.assertEqual(page.visits.count(), 1)
+        visit = page.visits.first()
+        self.assertIsNone(visit.user)
+
+
 class ExternalFileView(TestCase):
 
     @staticmethod
@@ -219,4 +256,4 @@ class ExternalFileView(TestCase):
         view = ExternalFileView.setup_view(view, request, slug=user.slug, 
                                          pk=page.pk)
                                                  
-        self.assertEqual(view.get_template_names()[0], page.file.url)
+        self.assertEqual("/media/" + view.get_template_names()[0], page.file.url)

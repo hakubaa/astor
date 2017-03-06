@@ -186,6 +186,14 @@ class PageVisitTest(TestCase):
         page.register_visit()
         self.assertEqual(page.visits.count(), 2)
 
+    def test_ignores_multiple_visits_from_the_same_ip(self):
+        page = BasePage.objects.create(title="Test Page")
+        request = RequestFactory().get("/fake_url")
+        request.user = AnonymousUser()
+        request.META = dict(REMOTE_ADDR="127.0.0.1")
+        page.register_visit(request)
+        page.register_visit(request)
+        self.assertEqual(page.visits.count(), 1)
 
 class CommentTest(TestCase):
 

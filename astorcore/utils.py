@@ -49,3 +49,18 @@ def user_directory_path(instance, filename):
     Create path where the file will be save: MEDIA_ROOT/analyses/user_slug/page_pk/<filename>
     '''
     return "analyses/{0}/{1}/{2}".format(instance.user.slug, instance.pk, filename)
+
+
+def get_client_ip(request):
+    '''
+    Returns client ip. 
+    source: http://stackoverflow.com/questions/4581789/how-do-i-get-user-ip-address-in-django
+    '''
+    if not hasattr(request, "META"):
+        return None
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", None)
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get("REMOTE_ADDR", None)
+    return ip
