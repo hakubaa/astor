@@ -7,7 +7,11 @@
     <title>ASTOR - Analyses Storage{% block title %}{% endblock %}</title>
     <!-- <link rel="stylesheet/less" href="{% static 'bootstrap/less/bootstrap.less' %}"> -->
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet"> 
     <style>
+        #astor-banner {
+            font-family: 'Roboto Condensed', sans-serif;
+        }
         @media (max-width: 768px) {
             #astor-banner {
                 display: none;
@@ -20,7 +24,6 @@
 </head>
 
 <body>
-
     <div class="container" id="astor-banner">
         <div class="row">
             <h2>
@@ -29,7 +32,6 @@
             </h2>
         </div>
     </div>
-
     {% include 'astormain/navbar.html' %}
     {% if messages %}
     <ul class="messages">

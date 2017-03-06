@@ -1,10 +1,13 @@
 import unittest
 
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 
-from astorcore.models import IndexPage, ContentPage, BasePage, Page, Comment
+from astorcore.models import (
+    IndexPage, ContentPage, BasePage, Page, Comment, PageVisit
+)
 
 
 User = get_user_model()
@@ -137,6 +140,51 @@ class BasePageTest(TestCase):
         page.refresh_from_db()
         self.assertEqual(page.comments.count(), 1)
         self.assertEqual(page.comments.all()[0].body, comment.body)
+
+
+class PageVisitTest(TestCase):
+
+    def test_register_visit_creates_new_pagevisit(self):
+        page = BasePage.objects.create(title="Test Page")
+        page.register_visit()
+        self.assertEqual(PageVisit.objects.count(), 1)
+
+    def test_register_visit_sets_proper_page_and_user(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = BasePage.objects.create(title="Test Page")
+        page.register_visit(user=user)
+        visit = PageVisit.objects.first()
+        self.assertEqual(visit.page.specific, page.specific)        
+        self.assertEqual(visit.user, user)
+
+    def test_register_visit_accepts_request_as_first_argument(self):
+        page = BasePage.objects.create(title="Test Page")
+        request = RequestFactory().get("/fake_url")
+        page.register_visit(request)
+
+    def test_register_visit_takes_user_from_request(self):
+        user = User.objects.create_user(username="Test", password="test")
+        page = BasePage.objects.create(title="Teset Page")
+        request = RequestFactory().get("/fake_url")
+        request.user = user
+        request.session = {}
+        page.register_visit(request)
+        visit = PageVisit.objects.first()
+        self.assertEqual(visit.user, user)
+
+    def test_register_visit_ignores_anonymous_user(self):
+        page = BasePage.objects.create(title="Test Page")
+        request = RequestFactory().get("/fake_url")
+        request.user = AnonymousUser()
+        page.register_visit(request)
+        visit = PageVisit.objects.first()
+        self.assertIsNone(visit.user)
+
+    def test_inspect_page_visits_frequency(self):
+        page = BasePage.objects.create(title="Test Page")
+        page.register_visit()
+        page.register_visit()
+        self.assertEqual(page.visits.count(), 2)
 
 
 class CommentTest(TestCase):

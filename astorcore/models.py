@@ -22,7 +22,6 @@ class Page(models.Model):
         related_name="pages"
     )
 
-    # Required for storing different Pages.
     content_type = models.ForeignKey(
         ContentType, related_name="pages", null=True,
         on_delete=models.SET_NULL
@@ -50,8 +49,33 @@ class Page(models.Model):
         return reverse("astormain:page", 
                        kwargs={"slug": self.user.slug, "pk": self.pk})  
 
+    def register_visit(self, request=None, user=None):
+        '''Register page visit.'''
+        visit = PageVisit.objects.create(
+            page = self, 
+            user = user or (
+                getattr(request, "user", None) 
+                and (request.user.is_authenticated() or None) 
+                and request.user
+            )
+        )
+        return visit
+
     def __repr__(self):
         return "{!r} ({:d})".format(self.specific.__class__.__name__, self.pk)
+
+
+class PageVisit(models.Model):
+    '''Register who and when visit a page.'''
+    page = models.ForeignKey(
+        Page, on_delete=models.CASCADE, 
+        related_name="visits"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, blank=True, null=True,
+        related_name="+")
+    timestamp = models.DateTimeField(default=timezone.now)
 
 
 class BasePage(Page):
