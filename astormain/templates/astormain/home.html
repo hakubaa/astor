@@ -58,6 +58,10 @@
         -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
         -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
         box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+        display: none;
+    }
+    .fa-img.toggled {
+        display: block;
     }
     @media (max-width: 992px) {
         .fa-img {
@@ -88,7 +92,8 @@
         <div class="col-md-7">
             <ul class="featured-analyses">
             {% for analysis in featured_analyses %}
-                <li class="featured-analysis {% if forloop.counter0 == 0 %} toggled {% endif %}">
+                <li class="featured-analysis {% if forloop.counter0 == 0 %} toggled {% endif %}" 
+                    data-aid="{{analysis.pk}}">
                     <div class="fa-title">
                         <h3><a href="{{ analysis.get_absolute_url }}">{{analysis.title}}</a></h3>
                     </div>
@@ -101,7 +106,10 @@
             </ul>
         </div>
         <div class="col-md-5">
-            <img class="fa-img" src="http://www.foreverfaith.co.uk/wp-content/uploads/2014/12/Graph_01.gif">
+            {% for analysis in featured_analyses %}
+            <img class="fa-img {% if forloop.counter0 == 0 %} toggled {% endif %}" 
+                 data-aid="{{analysis.pk}}" src="{{ analysis.img_url }}">
+            {% endfor %}
         </div>
     </div>
     <div class="row la-wrapper">
@@ -126,6 +134,11 @@
             $(this).children(".fa-info").show();
             $(".featured-analysis").removeClass("toggled");
             $(this).addClass("toggled");
+
+            // Change image
+            $(".fa-img").removeClass("toggled"); // hide all images
+            var aid = $(this).data("aid");
+            $(".fa-img[data-aid='" + aid + "']").addClass("toggled");
         }
         event.stopPropagation();
         return false;

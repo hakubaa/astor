@@ -5,7 +5,7 @@ from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
 
 from astorcore.models import (
-    ContentPage, Page, Comment, HTMLUploadPage, PageVisit, BasePage
+    ContentPage, Page, Comment, HTMLUploadPage, PageVisit
 )
 from astormain.forms import CommentForm, ReplyForm
 import astormain.views as views
@@ -188,7 +188,7 @@ class RegisterVisitTest(TestCase):
             password=kwargs.get("password", "test")
         )
         page = user.add_page(
-            BasePage(**(kwargs or dict(title="My First Page")))
+            ContentPage(**(kwargs or dict(title="My First Page")))
         )
         return user, page    
 

@@ -38,9 +38,7 @@ class AnalysesView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         page = self.request.GET.get("page", 1)
 
-        paginator = Paginator(
-            self.request.user.pages.filter(basepage__editable=True), 10
-        )
+        paginator = Paginator(self.request.user.pages.filter(editable=True), 10)
         try:
             analyses = paginator.page(page)
         except PageNotAnInteger:

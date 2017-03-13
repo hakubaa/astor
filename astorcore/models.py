@@ -28,6 +28,35 @@ class Page(models.Model):
         on_delete=models.SET_NULL
     )
 
+    created_date = models.DateTimeField(default=timezone.now)
+    first_published_date = models.DateTimeField(
+        null=True, editable=False, db_index=True
+    )
+    published_page = models.OneToOneField(
+        "self", related_name="base_page",
+        blank=True, null=True,
+        on_delete=models.SET_NULL
+    )
+
+    tags = TaggableManager(blank=True)
+
+    # Distinction between drafts and published pages
+    editable = models.BooleanField(default=True, editable=False)
+    live = models.BooleanField(default=False, editable=False)
+
+
+    has_unpublished_changes = models.BooleanField(
+        default=False,
+        editable=False
+    )
+    latest_changes_date = models.DateTimeField(
+        null=True,
+        editable=False
+    )
+
+    comments_on = models.BooleanField(default=True)
+
+
     def __init__(self, *args, **kwargs):
         # Set content type only once
         super(Page, self).__init__(*args, **kwargs)
@@ -57,92 +86,11 @@ class Page(models.Model):
     def __repr__(self):
         return "{!r} ({:d})".format(self.specific.__class__.__name__, self.pk)
 
-
-class PageVisit(models.Model):
-    '''Register who and when visit a page.'''
-    page = models.ForeignKey(
-        Page, on_delete=models.CASCADE, 
-        related_name="visits"
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.SET_NULL, blank=True, null=True,
-        related_name="+")
-
-    timestamp = models.DateTimeField(default=timezone.now)
-    ip_address = models.GenericIPAddressField(blank=True, null=True)
-    user_agent = models.TextField(blank=True, null=True)
-    request_method = models.CharField(max_length=16, blank=True, null=True)
-
-    class Meta:
-        unique_together = ("page", "ip_address")
-
-    @classmethod
-    def create(cls, page, request=None, user=None):
-        '''Create PageVisit object.'''
-        http_headers = getattr(request, "META", dict())
-        visit = cls(
-            page = page,
-            user = user or (
-                getattr(request, "user", None) 
-                and (request.user.is_authenticated() or None) 
-                and request.user
-            ),
-            ip_address = get_client_ip(request),
-            user_agent = http_headers.get("HTTP_USER_AGENT"),
-            request_method = http_headers.get("REQUEST_METHOD")
-        )
-
-        try:
-            visit.full_clean()
-        except ValidationError:
-            return None
-        else:
-            visit.save()
-            return visit
-
-
-class BasePage(Page):
-    '''BasePage for creating other pages.'''
-    verbose_name = "page"
-    template_name = "astormain/pages/simple.html"
-
-    title = models.CharField(
-        max_length=255
-    )
-    created_date = models.DateTimeField(default=timezone.now)
-
-    first_published_date = models.DateTimeField(
-        null=True, editable=False, db_index=True
-    )
-    published_page = models.OneToOneField(
-        "self", related_name="base_page",
-        blank=True, null=True,
-        on_delete=models.SET_NULL
-    )
-
-    tags = TaggableManager(blank=True)
-
-    # Distinction between drafts and published pages
-    editable = models.BooleanField(default=True, editable=False)
-    live = models.BooleanField(default=False, editable=False)
-
-    has_unpublished_changes = models.BooleanField(
-        default=False,
-        editable=False
-    )
-    latest_changes_date = models.DateTimeField(
-        null=True,
-        editable=False
-    )
-
-    comments_on = models.BooleanField(default=True)
-
     def save(self, *args, **kwargs):
         '''Saves the page. Sets unpublished changes to True.'''
         self.has_unpublished_changes = True
         self.latest_changes_date = timezone.now()
-        super(BasePage, self).save(*args, **kwargs)
+        super(Page, self).save(*args, **kwargs)
 
     '''Add more informative name for save.'''
     save_draft = save
@@ -189,6 +137,50 @@ class BasePage(Page):
         return comment
 
 
+class PageVisit(models.Model):
+    '''Register who and when visit a page.'''
+    page = models.ForeignKey(
+        Page, on_delete=models.CASCADE, 
+        related_name="visits"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, blank=True, null=True,
+        related_name="+")
+
+    timestamp = models.DateTimeField(default=timezone.now)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.TextField(blank=True, null=True)
+    request_method = models.CharField(max_length=16, blank=True, null=True)
+
+    class Meta:
+        unique_together = ("page", "ip_address")
+
+    @classmethod
+    def create(cls, page, request=None, user=None):
+        '''Create PageVisit object.'''
+        http_headers = getattr(request, "META", dict())
+        visit = cls(
+            page = page,
+            user = user or (
+                getattr(request, "user", None) 
+                and (request.user.is_authenticated() or None) 
+                and request.user
+            ),
+            ip_address = get_client_ip(request),
+            user_agent = http_headers.get("HTTP_USER_AGENT"),
+            request_method = http_headers.get("REQUEST_METHOD")
+        )
+
+        try:
+            visit.full_clean()
+        except ValidationError:
+            return None
+        else:
+            visit.save()
+            return visit
+
+
 class Comment(models.Model):
     verbose_name = "comment"
 
@@ -198,7 +190,7 @@ class Comment(models.Model):
         related_name="comments"           
     )
     page = models.ForeignKey(
-        BasePage, on_delete=models.CASCADE, blank=True, null=True,
+        Page, on_delete=models.CASCADE, blank=True, null=True,
         related_name="comments"
     )
     parent = models.ForeignKey(
@@ -225,14 +217,16 @@ class Comment(models.Model):
         return comment
 
 
+class BasePage(Page):
+    '''BasePage for creating other pages.'''
+    verbose_name = "basepage"
 
-@register_page
-class IndexPage(BasePage):
-    verbose_name = "index page"
-    template_name = "astormain/pages/index.html"
-    help_text = "Index Page. No one wants me anymore."
+    class Meta:
+        abstract=True
 
-    abstract = models.TextField(default="", blank=True)    
+    title = models.CharField(max_length=255)
+    abstract = models.TextField(default="", blank=True) 
+    img_url = models.CharField(max_length=1024, blank=True)
 
 
 @register_page
@@ -241,7 +235,6 @@ class ContentPage(BasePage):
     template_name = "astormain/pages/content.html"
     help_text = "Provide some content and I will be happy."
 
-    abstract = models.TextField(default="", blank=True) 
     body = models.TextField(blank=True)
 
 
@@ -251,7 +244,6 @@ class AbstractUploadPage(BasePage):
     class Meta:
         abstract = True
 
-    abstract = models.TextField(default="", blank=True) 
     file = models.FileField(upload_to=user_directory_path)
 
 

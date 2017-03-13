@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from astoraccount.models import User
-from astorcore.models import BasePage, Comment
+from astorcore.models import ContentPage, Comment
 from astormain.forms import CommentForm, ReplyForm
 
 
@@ -19,7 +19,7 @@ class CommentFormTest(unittest.TestCase):
             form = CommentForm(author=None)
 
     def test_raises_validation_error_when_invalid_author(self):
-        form = CommentForm(page=BasePage(title="Test"), author=None)
+        form = CommentForm(page=ContentPage(title="Test"), author=None)
         with self.assertRaises(ValidationError):
             form.is_valid()
 
@@ -30,7 +30,7 @@ class CommentFormTest(unittest.TestCase):
 
     def test_raises_validation_error_when_user_not_saved(self):
         user = User(username="test")
-        page = BasePage(title="Page")
+        page = ContentPage(title="Page")
         page.id = 5
         page.pk = page.id
         form = CommentForm(page=page,author=user)
@@ -41,7 +41,7 @@ class CommentFormTest(unittest.TestCase):
         user = User(username="teset")
         user.id = 5
         user.pk = 5
-        page = BasePage(title="Page")
+        page = ContentPage(title="Page")
         form = CommentForm(page=page,author=user)
         with self.assertRaises(ValidationError):
             form.is_valid()
@@ -50,7 +50,7 @@ class CommentFormTest(unittest.TestCase):
         user = User(username="test")
         user.id = 5
         user.pk = user.id
-        page = BasePage(title="Page")
+        page = ContentPage(title="Page")
         page.id = 3 
         page.pk = page.id
         form = CommentForm(page=page, author=user)
@@ -61,7 +61,7 @@ class CommentFormSaveTest(TestCase):
 
     def test_save_adds_comment_to_page_and_sets_author(self):
         user = User.objects.create_user(username="Test", password="test1234")
-        page = user.add_page(BasePage(title="My First Page"))
+        page = user.add_page(ContentPage(title="My First Page"))
         form = CommentForm(page=page, author=user, 
                            data={"body": "My First Comment"})
         self.assertTrue(form.is_valid())
@@ -97,7 +97,7 @@ class ReplyFormSaveTest(TestCase):
 
     def test_save_adds_reply_to_comment_and_sets_author(self):
         user = User.objects.create_user(username="Test", password="test1234")
-        page = user.add_page(BasePage(title="My First Page"))
+        page = user.add_page(ContentPage(title="My First Page"))
         comment = page.add_comment(body="Comment #1", author=user)
         form = ReplyForm(comment=comment, author=user, 
                          data={"body": "Reply #1"})

@@ -3,7 +3,7 @@ from taggit.models import Tag
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from astorcore.models import Page, BasePage, ContentPage, IndexPage, Comment
+from astorcore.models import Page, BasePage, ContentPage, Comment
 from astorcore.decorators import register_serializer
 
 
@@ -72,13 +72,6 @@ class ContentPageSerializer(BasePageSerializer):
     class Meta:
         model = ContentPage
         fields = BasePageSerializer.Meta.fields + ["abstract", "body"]
-
-
-@register_serializer
-class IndexPageSerializer(BasePageSerializer):
-    class Meta:
-        model = IndexPage
-        fields = BasePageSerializer.Meta.fields + ["abstract"]
 
 
 class CommentSerializer(serializers.ModelSerializer):

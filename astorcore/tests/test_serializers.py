@@ -3,7 +3,7 @@ import unittest
 from django.contrib.auth import get_user_model
 
 from astorcore.serializers import CommentSerializer
-from astorcore.models import Comment, BasePage
+from astorcore.models import Comment, ContentPage
 
 
 User = get_user_model()
@@ -12,7 +12,7 @@ User = get_user_model()
 class CommentSerializerTest(unittest.TestCase):
 
     def test_is_valid_is_false_when_no_page(self):
-        page = BasePage.objects.create(title="Page Test")
+        page = ContentPage.objects.create(title="Page Test")
         cs = CommentSerializer(
                 data={"body": "Comment Test"}
         )
@@ -20,7 +20,7 @@ class CommentSerializerTest(unittest.TestCase):
         self.assertIn("page", cs.errors)
 
     def test_for_saving_comment_with_page_and_author(self):
-        page = BasePage.objects.create(title="Page Test")
+        page = ContentPage.objects.create(title="Page Test")
         user = User.objects.create_user(username="Test", password="test123")
         cs = CommentSerializer(
                 data={"body": "Comment Test", "page": page.pk, "author": user.pk}

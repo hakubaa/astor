@@ -7,12 +7,12 @@ from django.http.response import Http404
 from django.contrib.auth import get_user_model
 from taggit.models import Tag
 
-from astorcore.models import BasePage, Comment
+from astorcore.models import ContentPage, Comment
 from astorcore.views import (
     AnalysisList, AnalysisDetail, AnalysisCommentDetail,
     CommentReplyDetail
 )
-from astorcore.serializers import BasePageSerializer
+from astorcore.serializers import ContentPageSerializer
 
 
 User = get_user_model()
@@ -75,7 +75,7 @@ class TagsTest(TestCase):
 class AnalysisDetailTest(SetupViewMixin, TestCase):
 
     def test_get_object_returns_specific_page(self):
-        page = BasePage.objects.create()
+        page = ContentPage.objects.create()
 
         request_factory = RequestFactory()
         request = request_factory.get("/fake_url", data={"apk": page.pk})
@@ -88,7 +88,7 @@ class AnalysisDetailTest(SetupViewMixin, TestCase):
         self.assertEqual(page, page_view)
 
     def test_get_serializer_class_returns_correct_serializer(self):  
-        page = BasePage.objects.create()
+        page = ContentPage.objects.create()
 
         request_factory = RequestFactory()
         request = request_factory.get("/fake_url", data={"apk": page.pk})
@@ -97,10 +97,10 @@ class AnalysisDetailTest(SetupViewMixin, TestCase):
         view = AnalysisDetailTest.setup_view(view, request, apk=page.pk)
 
         serializer = view.get_serializer_class()
-        self.assertEqual(serializer, BasePageSerializer)
+        self.assertEqual(serializer, ContentPageSerializer)
 
     def test_get_request_returns_analysis(self):
-        page = BasePage.objects.create(title="WTF")
+        page = ContentPage.objects.create(title="WTF")
 
         response = self.client.get(
             reverse("api:analysis-detail", kwargs={"apk": page.pk})
@@ -114,8 +114,8 @@ class AnalysisDetailTest(SetupViewMixin, TestCase):
 class AnalysisListTest(SetupViewMixin, TestCase):
 
     def test_returns_list_of_analyses(self):
-        page1 = BasePage.objects.create(title="Test Page #1")
-        page2 = BasePage.objects.create(title="Test Page #2")
+        page1 = ContentPage.objects.create(title="Test Page #1")
+        page2 = ContentPage.objects.create(title="Test Page #2")
 
         response = self.client.get(reverse("api:analysis-list")) 
 
@@ -128,10 +128,10 @@ class AnalysisListTest(SetupViewMixin, TestCase):
 class AnalysisCommentDetailTest(SetupViewMixin, TestCase):
 
     def test_get_object_returns_correct_comment(self):
-        page = BasePage.objects.create(title="Valid Page")
+        page = ContentPage.objects.create(title="Valid Page")
         comment = page.add_comment(body="Valid Comment")
         # create fake page & comment
-        BasePage.objects.create(title="Fake Page").add_comment(body="Fake Cmnt")
+        ContentPage.objects.create(title="Fake Page").add_comment(body="Fake Cmnt")
 
         request_factory = RequestFactory()
         request = request_factory.get(
@@ -148,9 +148,9 @@ class AnalysisCommentDetailTest(SetupViewMixin, TestCase):
         self.assertEqual(comment_view, comment)
 
     def test_get_object_raises_404_when_invalid_apk(self):
-        page = BasePage.objects.create(title="Valid Page")
+        page = ContentPage.objects.create(title="Valid Page")
         comment = page.add_comment(body="Valid Comment")  
-        fake_page = BasePage.objects.create(title="Fake Page")
+        fake_page = ContentPage.objects.create(title="Fake Page")
 
         request_factory = RequestFactory()
         request = request_factory.get(
@@ -167,7 +167,7 @@ class AnalysisCommentDetailTest(SetupViewMixin, TestCase):
 
 
     def test_for_returning_comment(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         comment = page.add_comment(body="Test Comment")
 
         response = self.client.get(
@@ -180,7 +180,7 @@ class AnalysisCommentDetailTest(SetupViewMixin, TestCase):
         self.assertEqual(data["body"], comment.body)
 
     def test_for_returning_comment_without_analysis_pk(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         comment = page.add_comment(body="Test Comment")
 
         response = self.client.get(
@@ -195,7 +195,7 @@ class AnalysisCommentDetailTest(SetupViewMixin, TestCase):
 class AnalysisCommentListTest(TestCase):
 
     def test_logged_in_user_adds_comment(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         user = User.objects.create_user(username="Test", password="test123")
         self.client.login(username="Test", password="test123")
 
@@ -210,7 +210,7 @@ class AnalysisCommentListTest(TestCase):
         self.assertEqual(comment.page.pk, page.pk)
 
     def test_returns_401_when_anonymouse_user_adds_comment(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
 
         response = self.client.post(
             reverse("api:analysis-comment-list", kwargs=dict(apk=page.pk)),
@@ -220,7 +220,7 @@ class AnalysisCommentListTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_sets_author_of_the_comment(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         user = User.objects.create_user(username="Test", password="test123")
         fake_user = User.objects.create_user(username="Fake", password="fake12")
         self.client.login(username="Test", password="test123")
@@ -234,8 +234,8 @@ class AnalysisCommentListTest(TestCase):
         self.assertEqual(comment.author, user)
 
     def test_returns_comments_for_selected_analysis(self):
-        page = BasePage.objects.create(title="Test Page")
-        fake_page = BasePage.objects.create(title = "Fakse Page")
+        page = ContentPage.objects.create(title="Test Page")
+        fake_page = ContentPage.objects.create(title = "Fakse Page")
         page.add_comment(body="Test Comment #0").reply(body="Test Reply #0#0")
         fake_page.add_comment(body="Test Comment #1")
         page.add_comment(body="Test Comment #2")
@@ -252,11 +252,11 @@ class AnalysisCommentListTest(TestCase):
 class CommentReplyDetailTest(SetupViewMixin, TestCase):
 
     def test_get_object_returns_correct_comment(self):
-        page = BasePage.objects.create(title="Valid Page")
+        page = ContentPage.objects.create(title="Valid Page")
         comment = page.add_comment(body="Valid Comment")
         reply = comment.reply(body="Valid Reply")
         # create fake page & comment & reply
-        BasePage.objects.create(title="Fake Page").\
+        ContentPage.objects.create(title="Fake Page").\
             add_comment(body="Fake Cmnt").reply(body="Fake Reply")
 
         request_factory = RequestFactory()
@@ -274,11 +274,11 @@ class CommentReplyDetailTest(SetupViewMixin, TestCase):
         self.assertEqual(reply_view, reply)
 
     def test_get_object_raises_404_when_invalid_cpk(self):
-        page = BasePage.objects.create(title="Valid Page")
+        page = ContentPage.objects.create(title="Valid Page")
         comment = page.add_comment(body="Valid Comment")
         reply = comment.reply(body="Valid Reply")
 
-        fake_comment = BasePage.objects.create(title="Fake Page").\
+        fake_comment = ContentPage.objects.create(title="Fake Page").\
                            add_comment(body="Fake Comment")
 
         request_factory = RequestFactory()
@@ -295,7 +295,7 @@ class CommentReplyDetailTest(SetupViewMixin, TestCase):
             reply_view = view.get_object()
 
     def test_for_returning_reply(self):
-        page = BasePage.objects.create(title="Valid Page")
+        page = ContentPage.objects.create(title="Valid Page")
         page.add_comment(body="Fake Comment")
         comment = page.add_comment(body="Valid Comment")
         reply = comment.reply(body="Valid Reply")
@@ -314,7 +314,7 @@ class CommentReplyDetailTest(SetupViewMixin, TestCase):
 class CommentReplyListTest(TestCase):
 
     def test_logged_in_user_adds_reply(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         comment = page.add_comment(body="Test Comment")
         user = User.objects.create_user(username="Test", password="test123")
         self.client.login(username="Test", password="test123")
@@ -331,7 +331,7 @@ class CommentReplyListTest(TestCase):
         self.assertEqual(reply.parent.pk, comment.pk)
 
     def test_returns_401_when_anonymouse_user_adds_reply(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         comment = page.add_comment(body="Test Comment")
 
         response = self.client.post(
@@ -343,7 +343,7 @@ class CommentReplyListTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_sets_author_of_the_reply(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         comment = page.add_comment(body="Test Comment")
         user = User.objects.create_user(username="Test", password="test123")
         fake_user = User.objects.create_user(username="Fake", password="fake12")
@@ -359,7 +359,7 @@ class CommentReplyListTest(TestCase):
         self.assertEqual(reply.author, user)
 
     def test_returns_replies_for_selected_comment(self):
-        page = BasePage.objects.create(title="Test Page")
+        page = ContentPage.objects.create(title="Test Page")
         page.add_comment(body="Test Comment #0").reply(body="Test Reply #0#0")
         page.add_comment(body="Test Comment #1")
         comment = page.add_comment(body="Test Comment #2")

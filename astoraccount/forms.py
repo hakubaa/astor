@@ -4,25 +4,16 @@ from django.forms.widgets import TextInput
 from ckeditor.widgets import CKEditorWidget
 
 from astorcore.models import (
-    IndexPage, ContentPage, HTMLUploadPage
+    ContentPage, HTMLUploadPage
 )
 from astorcore.decorators import register_form
 
 
 @register_form
-class IndexPageForm(ModelForm):
-    class Meta:
-        model = IndexPage
-        fields = ["title", "abstract"]
-        widgets = {
-            "title": TextInput(attrs={"placeholder": "Enter a title."}),
-        }
-
-@register_form
-class ContentPageForm(IndexPageForm):
+class ContentPageForm(ModelForm):
     class Meta:
         model = ContentPage
-        fields = IndexPageForm.Meta.fields + ["body", "tags"]
+        fields =[ "title", "abstract", "img_url", "body", "tags", "img_url"]
         widgets = {
             "title": TextInput(attrs={"placeholder": "Enter a title."}),
             "body": CKEditorWidget(),
@@ -40,4 +31,4 @@ class ContentPageForm(IndexPageForm):
 class HTMLUploadPageForm(ModelForm):
     class Meta:
         model = HTMLUploadPage
-        fields = ["title", "abstract", "file"]
+        fields = ["title", "abstract", "img_url", "file"]

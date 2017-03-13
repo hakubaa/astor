@@ -13,10 +13,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from astorcore.models import (
-    BasePage, ContentPage, IndexPage, Page, HTMLUploadPage
+    ContentPage, Page, HTMLUploadPage
 )
 from astoraccount.forms import (
-    ContentPageForm, IndexPageForm, HTMLUploadPageForm
+    ContentPageForm, HTMLUploadPageForm
 )
 import astorcore.decorators as decos
 
@@ -59,11 +59,11 @@ class PageNewTest(AstorTestCase):
 
         # Register few new type of pages
         @decos.register_page
-        class EmptyPage(BasePage):
+        class EmptyPage(ContentPage):
             verbose_name = "empty page"
 
         @decos.register_page
-        class LinkPage(BasePage):
+        class LinkPage(ContentPage):
             verbose_name = "link page"
 
         self.create_and_login_user()
@@ -91,7 +91,7 @@ class PageCreateTest(AstorTestCase):
         user = self.create_and_login_user()
         self.client.get(reverse("astoraccount:page_create"), 
                         {"type": "astorcore:contentpage"})
-        self.assertEqual(BasePage.objects.count(), 1)
+        self.assertEqual(ContentPage.objects.count(), 1)
         user = User.objects.filter(username="Test").first()
         self.assertEqual(user.pages.count(), 1)
 
@@ -129,10 +129,10 @@ class PageEditTest(AstorTestCase):
 
     def test_for_passing_correct_form_to_tempalte2(self):
         user = self.create_and_login_user()
-        page = user.add_page(instance=IndexPage())
+        page = user.add_page(instance=ContentPage())
         response = self.client.get(reverse("astoraccount:page_edit", 
                                            args=(page.id,)))
-        self.assertEqual(type(response.context["form"]), IndexPageForm)        
+        self.assertEqual(type(response.context["form"]), ContentPageForm)        
 
     def test_for_saving_data_from_form(self):
         user = self.create_and_login_user()
@@ -141,7 +141,7 @@ class PageEditTest(AstorTestCase):
                                  kwargs={"pk": page.pk}),
                         {"title": "First Edit Ever", "abstract": "Simple Page",
                          "body": "Nice body"})
-        page = BasePage.objects.get(id=page.id)
+        page = ContentPage.objects.get(id=page.id)
         self.assertEqual(page.specific.title, "First Edit Ever")
         self.assertEqual(page.specific.abstract, "Simple Page")
         self.assertEqual(page.specific.body, "Nice body")

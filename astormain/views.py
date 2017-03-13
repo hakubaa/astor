@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 from django.contrib.auth import get_user_model
-
+from django.db.models import Count
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.detail import SingleObjectMixin
@@ -19,9 +19,25 @@ class HomePageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
+
+        # Create list of features analyses (temporary solution)
         featured_analyses = [ page.specific for page in Page.objects.all() 
-                                         if page.specific.live ]
+                                            if page.specific.live ]
+
+        # Create list of most pouplar analyses (by number of visits)
+        pages = Page.objects.all().annotate(
+            visits_count=Count("visits")
+        ).order_by("-visits_count")[:5]
+        popular_analyses = [ page.specific for page in pages 
+                                           if page.specific.live ]
+
+        # Create list of the latest/newest analyses
+        newest_analyses = []
+
         context["featured_analyses"] = featured_analyses
+        context["popular_analyses"] = popular_analyses
+        context["newest_analyses"] = newest_analyses
+        
         return context
 
 
